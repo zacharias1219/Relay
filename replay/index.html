@@ -1,0 +1,449 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Relay Routing Results</title>
+<meta name="description" content="Relay: does routing the stages of a bug-fix task across local and Groq models beat one big model? Every number here comes from results.json, which is built only from traces.">
+<style>
+:root {
+  color-scheme: light;
+  --page: #f9f9f7; --surface: #fcfcfb; --surface-2: #f3f2ee;
+  --ink: #0b0b0b; --ink-2: #52514e; --muted: #75736d;
+  --grid: #e1e0d9; --axis: #c3c2b7; --border: rgba(11,11,11,0.10);
+  --s1: #2a78d6; --s2: #eb6834; --s3: #1baf7a;
+  --test: #9c9a93; --queue: #c3c2b7;
+  --good: #0ca30c; --good-ink: #006300; --critical: #d03b3b; --warning: #fab219;
+  --banner: #fff4d6; --banner-ink: #5a4100;
+  --code: #f3f2ee;
+  --accent: #2a78d6;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+    --page: #0d0d0d; --surface: #1a1a19; --surface-2: #232321;
+    --ink: #f0efec; --ink-2: #c3c2b7; --muted: #a09e97;
+    --grid: #2c2c2a; --axis: #383835; --border: rgba(255,255,255,0.10);
+    --s1: #3987e5; --s2: #d95926; --s3: #199e70;
+    --test: #6f6d68; --queue: #4a4945;
+    --good-ink: #0ca30c; --banner: #3a2f10; --banner-ink: #f6dc94; --code: #232321; --accent: #3987e5;
+  }
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --page: #0d0d0d; --surface: #1a1a19; --surface-2: #232321;
+  --ink: #f0efec; --ink-2: #c3c2b7; --muted: #a09e97;
+  --grid: #2c2c2a; --axis: #383835; --border: rgba(255,255,255,0.10);
+  --s1: #3987e5; --s2: #d95926; --s3: #199e70;
+  --test: #6f6d68; --queue: #4a4945;
+  --good-ink: #0ca30c; --banner: #3a2f10; --banner-ink: #f6dc94; --code: #232321; --accent: #3987e5;
+}
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body { margin: 0; background: var(--page); color: var(--ink); font: 16px/1.55 system-ui, -apple-system, "Segoe UI", sans-serif; }
+main { max-width: 1040px; margin: 0 auto; padding: 24px 16px 80px; }
+h1 { font-size: 30px; line-height: 1.2; margin: 8px 0 4px; letter-spacing: -0.01em; }
+h2 { font-size: 21px; margin: 48px 0 12px; padding-top: 8px; border-top: 1px solid var(--grid); }
+h3 { font-size: 16px; margin: 24px 0 8px; }
+p { margin: 8px 0; max-width: 72ch; }
+.sub { color: var(--ink-2); margin: 0 0 16px; }
+.meta { color: var(--muted); font-size: 13px; }
+a { color: var(--accent); }
+.banner { background: var(--banner); color: var(--banner-ink); border-radius: 10px; padding: 12px 16px; margin: 16px 0; font-weight: 500; }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 16px; margin: 12px 0; }
+.scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.scroll > table { min-width: 620px; }
+#policies table, #paired table { min-width: 900px; }
+#policies td:first-child { min-width: 150px; }
+table { border-collapse: collapse; width: 100%; font-size: 14px; }
+th, td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--grid); vertical-align: top; }
+th { color: var(--ink-2); font-weight: 600; font-size: 13px; white-space: nowrap; }
+td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.ci { color: var(--muted); font-size: 12px; display: block; }
+.verdict { font-size: 13px; }
+.verdict.worse { color: var(--critical); } .verdict.better { color: var(--good-ink); } .verdict.none { color: var(--ink-2); }
+code, pre { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: 13px; }
+pre { background: var(--code); border-radius: 8px; padding: 10px 12px; overflow-x: auto; margin: 8px 0; white-space: pre; }
+details summary { cursor: pointer; color: var(--ink-2); font-size: 14px; }
+.figure { margin: 16px 0; }
+.figure svg { max-width: 100%; height: auto; display: block; }
+.legend { display: flex; flex-wrap: wrap; gap: 14px; font-size: 13px; color: var(--ink-2); margin: 8px 0; }
+.sw { display: inline-block; width: 12px; height: 12px; border-radius: 3px; vertical-align: -1px; margin-right: 6px; }
+.sw.queue { background: repeating-linear-gradient(45deg, var(--queue) 0 3px, transparent 3px 6px); border: 1px solid var(--queue); }
+.pass { color: var(--good-ink); font-weight: 600; } .fail { color: var(--critical); font-weight: 600; }
+.grid-tasks { display: grid; grid-template-columns: minmax(120px, 1fr) repeat(var(--cols), 44px); gap: 2px; font-size: 13px; align-items: center; }
+.grid-tasks .h { color: var(--ink-2); font-weight: 600; text-align: center; }
+.grid-tasks .cell { text-align: center; border-radius: 4px; padding: 2px 0; background: var(--surface-2); }
+.tags { display: flex; flex-wrap: wrap; gap: 6px; }
+.tag { font-size: 12px; background: var(--surface-2); border-radius: 999px; padding: 2px 10px; color: var(--ink-2); }
+ul.findings { padding-left: 20px; } ul.findings li { margin: 6px 0; }
+.controls { display: flex; flex-wrap: wrap; gap: 10px 16px; align-items: end; margin: 8px 0 16px; }
+.controls label { display: flex; flex-direction: column; font-size: 12px; color: var(--ink-2); gap: 4px; }
+select, button { font: inherit; font-size: 14px; color: var(--ink); background: var(--surface); border: 1px solid var(--axis); border-radius: 8px; padding: 6px 10px; min-height: 36px; }
+button { cursor: pointer; } button.primary { background: var(--ink); color: var(--page); border-color: var(--ink); }
+.lane { margin: 14px 0; }
+.lane-head { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 4px 16px; font-size: 14px; margin-bottom: 6px; }
+.lane-head .stats { color: var(--ink-2); font-variant-numeric: tabular-nums; display: flex; gap: 14px; flex-wrap: wrap; }
+.track { position: relative; height: 34px; background: var(--surface-2); border-radius: 8px; overflow: hidden; }
+.seg { position: absolute; top: 5px; height: 24px; border-radius: 4px; }
+.seg.test { background: var(--test); top: 11px; height: 12px; }
+.seg.queue { background: repeating-linear-gradient(45deg, var(--queue) 0 3px, transparent 3px 6px); top: 11px; height: 12px; }
+.seg.b-local-small { background: var(--s1); } .seg.b-groq-small { background: var(--s2); } .seg.b-groq-large { background: var(--s3); }
+.seg.cache { outline: 2px dashed var(--ink-2); outline-offset: -2px; }
+.tick { position: absolute; top: 0; bottom: 0; width: 1px; background: var(--axis); }
+.mark { position: absolute; top: -1px; font-size: 11px; transform: translateX(-50%); }
+.playhead { position: absolute; top: 0; bottom: 0; width: 2px; background: var(--ink); }
+.shade { position: absolute; top: 0; bottom: 0; right: 0; background: var(--surface-2); opacity: 0.72; }
+.arch svg { width: 100%; height: auto; }
+.arch .box { fill: var(--surface); stroke: var(--axis); }
+.arch .hl { fill: var(--surface-2); stroke: var(--accent); stroke-width: 2; }
+.arch text { fill: var(--ink); font: 12px system-ui, sans-serif; }
+.arch text.small { fill: var(--ink-2); font-size: 11px; }
+.arch line, .arch path { stroke: var(--muted); fill: none; stroke-width: 1.2; }
+.err { color: var(--critical); }
+.toc { font-size: 14px; color: var(--ink-2); display: flex; flex-wrap: wrap; gap: 6px 14px; margin: 12px 0; }
+.toc a { color: var(--ink-2); }
+.theme { float: right; }
+.tip { position: fixed; pointer-events: none; background: var(--ink); color: var(--page); font-size: 12px; padding: 6px 8px; border-radius: 6px; max-width: 280px; z-index: 10; display: none; }
+@media (max-width: 640px) {
+  h1 { font-size: 24px; }
+  th, td { padding: 6px; }
+}
+</style>
+</head>
+<body>
+<main>
+  <button class="theme" id="theme" type="button" aria-label="Toggle light or dark theme">Theme</button>
+  <p class="meta">Relay · routing lab results</p>
+  <h1>Does routing beat one big model?</h1>
+  <p class="sub" id="sub">Loading results.json…</p>
+  <div id="root"></div>
+</main>
+<div class="tip" id="tip"></div>
+
+<template id="arch-tpl">
+<div class="arch figure" data-figure>
+<svg viewBox="0 0 760 330" role="img" aria-label="Relay architecture: task, runner, router, cache, three backends, sandbox, trace file, analysis and replay page">
+  <defs><marker id="ar" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L8,4 L0,8" style="fill:var(--muted);stroke:none"/></marker></defs>
+  <rect class="box" x="10" y="80" width="110" height="60" rx="8"/><text x="65" y="104" text-anchor="middle" font-weight="600">Task</text><text class="small" x="65" y="122" text-anchor="middle">bug fix + tests</text>
+  <rect class="box" x="150" y="80" width="130" height="60" rx="8"/><text x="215" y="104" text-anchor="middle" font-weight="600">Runner</text><text class="small" x="215" y="122" text-anchor="middle">stages and retries</text>
+  <rect class="hl" x="310" y="80" width="130" height="60" rx="8"/><text x="375" y="104" text-anchor="middle" font-weight="600">Router</text><text class="small" x="375" y="122" text-anchor="middle">policy picks backend</text>
+  <rect class="box" x="470" y="80" width="120" height="60" rx="8"/><text x="530" y="104" text-anchor="middle" font-weight="600">Cache</text><text class="small" x="530" y="122" text-anchor="middle">rate limits, replay</text>
+  <rect class="box" x="630" y="10" width="120" height="50" rx="8"/><text x="690" y="32" text-anchor="middle" font-weight="600">local-small</text><text class="small" x="690" y="48" text-anchor="middle">your laptop</text>
+  <rect class="box" x="630" y="85" width="120" height="50" rx="8"/><text x="690" y="107" text-anchor="middle" font-weight="600">groq-small</text><text class="small" x="690" y="123" text-anchor="middle">on Groq</text>
+  <rect class="box" x="630" y="160" width="120" height="50" rx="8"/><text x="690" y="182" text-anchor="middle" font-weight="600">groq-large</text><text class="small" x="690" y="198" text-anchor="middle">on Groq</text>
+  <rect class="box" x="150" y="200" width="130" height="50" rx="8"/><text x="215" y="222" text-anchor="middle" font-weight="600">Sandbox</text><text class="small" x="215" y="238" text-anchor="middle">runs the tests</text>
+  <rect class="box" x="310" y="200" width="280" height="50" rx="8"/><text x="450" y="222" text-anchor="middle" font-weight="600">Trace file</text><text class="small" x="450" y="238" text-anchor="middle">one JSON line per call and per test run</text>
+  <rect class="box" x="310" y="270" width="280" height="50" rx="8"/><text x="450" y="292" text-anchor="middle" font-weight="600">Analysis and this page</text><text class="small" x="450" y="308" text-anchor="middle">reads results.json only, never the API</text>
+  <line x1="120" y1="110" x2="148" y2="110" marker-end="url(#ar)"/>
+  <line x1="280" y1="110" x2="308" y2="110" marker-end="url(#ar)"/>
+  <line x1="440" y1="110" x2="468" y2="110" marker-end="url(#ar)"/>
+  <path d="M590,110 L610,110 L610,35 L628,35" marker-end="url(#ar)"/>
+  <line x1="590" y1="110" x2="628" y2="110" marker-end="url(#ar)"/>
+  <path d="M590,110 L610,110 L610,185 L628,185" marker-end="url(#ar)"/>
+  <line x1="200" y1="140" x2="200" y2="198" marker-end="url(#ar)"/><text class="small" x="160" y="174">patch</text>
+  <line x1="232" y1="198" x2="232" y2="142" marker-end="url(#ar)"/><text class="small" x="238" y="174">pass or fail</text>
+  <line x1="280" y1="225" x2="308" y2="225" marker-end="url(#ar)"/>
+  <line x1="530" y1="140" x2="530" y2="198" marker-end="url(#ar)"/><text class="small" x="536" y="174">logs every call</text>
+  <line x1="450" y1="250" x2="450" y2="268" marker-end="url(#ar)"/>
+</svg>
+</div>
+</template>
+
+<script>
+"use strict";
+(() => {
+const $ = (sel, el = document) => el.querySelector(sel);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const params = new URLSearchParams(location.search);
+const RESULTS = params.get("results") || "results.json";
+const base = RESULTS.includes("/") ? RESULTS.slice(0, RESULTS.lastIndexOf("/") + 1) : "";
+
+// Theme toggle: a stamp on <html> that wins over the OS setting both ways.
+const themeBtn = $("#theme");
+try { const t = localStorage.getItem("relay-theme"); if (t) document.documentElement.dataset.theme = t; } catch (e) {}
+themeBtn.addEventListener("click", () => {
+  const dark = document.documentElement.dataset.theme
+    ? document.documentElement.dataset.theme === "dark"
+    : matchMedia("(prefers-color-scheme: dark)").matches;
+  const next = dark ? "light" : "dark";
+  document.documentElement.dataset.theme = next;
+  try { localStorage.setItem("relay-theme", next); } catch (e) {}
+});
+
+const tip = $("#tip");
+function bindTips(scope) {
+  scope.querySelectorAll("[data-tip]").forEach(el => {
+    el.addEventListener("pointermove", e => {
+      tip.textContent = el.dataset.tip; tip.style.display = "block";
+      const x = Math.min(e.clientX + 12, innerWidth - 290);
+      tip.style.left = x + "px"; tip.style.top = (e.clientY + 14) + "px";
+    });
+    el.addEventListener("pointerleave", () => { tip.style.display = "none"; });
+  });
+}
+
+fetch(RESULTS, {cache: "no-store"})
+  .then(r => { if (!r.ok) throw new Error(r.status + " " + r.statusText); return r.json(); })
+  .then(render)
+  .catch(err => {
+    $("#sub").innerHTML = `<span class="err">Could not load <code>${esc(RESULTS)}</code> (${esc(err.message)}).</span>
+      Build it with <code>make analyze</code> (or <code>make repro</code>) and serve the repo with <code>make serve</code>.
+      No experiment yet? See the offline demo: <a href="?results=demo-results.json">demo-results.json</a>.`;
+  });
+
+function verdictClass(v) { return v.startsWith("better") ? "better" : v.startsWith("worse") ? "worse" : "none"; }
+function cell(iv) { return `${esc(iv.display)}<span class="ci">${esc(iv.display_ci)}</span>`; }
+function section(id, title, html) { return `<section id="${id}"><h2>${esc(title)}</h2>${html}</section>`; }
+
+function render(R) {
+  const C = R.config, P = R.policies, F = R.failures;
+  const pol = Object.fromEntries(P.map(p => [p.id, p]));
+  $("#sub").innerHTML = `Generated ${esc(R.generated_at)} from ${esc(R.runs.length)} stored runs. Every number on this page is read from <code>${esc(RESULTS)}</code>, which is rebuilt from traces by <code>${esc(R.repro.command)}</code>.`;
+  let h = "";
+  if (R.synthetic) h += `<div class="banner" role="note">Synthetic demo. These numbers come from the offline simulator in <code>config.demo.yaml</code>, not from any real model. They show what the page looks like and prove the pipeline runs end to end; they say nothing about Groq or local models. Run the real experiment to replace them.</div>`;
+  h += `<nav class="toc" aria-label="Sections"><a href="#problem">Problem</a><a href="#policies">Policies</a><a href="#paired">Paired comparison</a><a href="#race">Race replay</a><a href="#tradeoffs">Tradeoffs rejected</a><a href="#failures">Failure gallery</a><a href="#cost">Cost and latency</a><a href="#repro">Reproduce</a></nav>`;
+
+  // 1. Problem, Groq constraint, architecture
+  const be = C.backends;
+  h += section("problem", "Problem, constraint and architecture", `
+    <p><strong>The Groq constraint, stated plainly:</strong> Groq serves every model on its own chip, so Relay routes across <em>models</em> and across <em>local versus hosted</em>, not across chip vendors. Free-tier limits apply per organisation and per model (Groq's published sample for text models is ${esc(C.groq_sample_limits_display)}); free usage costs nothing, so cost here is the <strong>list-price equivalent</strong>: tokens used times each model's published price.</p>
+    <p>Most agent demos send every step to one model. That wastes money on easy steps and time on hard ones. Relay splits a bug-fix task into stages (diagnose, patch, verify, retry), lets a policy pick a backend for each stage, and asks whether routing solves as many tasks as the all-large baseline for less money and time. The verifier is the task's real test suite, so escalation fires only on real failure.</p>
+    ${$("#arch-tpl").innerHTML}
+    <div class="scroll"><table><thead><tr><th>Backend</th><th>Role</th><th>Runs on</th><th>Model id</th><th>List price</th><th>Configured limits</th></tr></thead><tbody>
+    ${Object.entries(be).map(([id, b]) => `<tr><td><span class="sw" style="background:var(--${id === "local-small" ? "s1" : id === "groq-small" ? "s2" : "s3"})"></span>${esc(id)}</td><td>${esc(b.role)}</td><td>${esc(b.kind === "sim" ? "simulator (demo)" : b.runs_on)}</td><td><code>${esc(b.model_id)}</code></td><td>${esc(b.price_display)}</td><td>${esc(b.limits_display)}</td></tr>`).join("")}
+    </tbody></table></div>
+    <div class="scroll"><table><thead><tr><th>Policy</th><th>What it does</th></tr></thead><tbody>
+    ${Object.entries(C.policies).map(([id, p]) => `<tr><td><strong>${esc(id)}</strong> ${esc(p.name)}</td><td>${esc(p.description)}</td></tr>`).join("")}
+    </tbody></table></div>`);
+
+  // 2. Policy table
+  h += section("policies", "Policy results", `
+    <p>Each task is one unit, so n is ${esc(C.n_tasks_display)} and the intervals are wide. That is the honest answer, not a bug. Brackets are ${esc(C.ci_level_display)} bootstrap intervals from ${esc(C.bootstrap_resamples_display)} resamples. Latency runs from task start to final verify with queue wait excluded; wall clock includes it.</p>
+    <div class="card scroll"><table><thead><tr><th>Policy</th><th class="num">Solved</th><th class="num">Pass rate</th><th class="num">Cost per solved task</th><th class="num">Latency p50</th><th class="num">Latency p95</th><th class="num">Wall clock p50</th><th class="num">Escalation rate</th><th class="num">Calls per task</th></tr></thead><tbody>
+    ${P.map(p => `<tr><td><strong>${esc(p.id)}</strong> ${esc(p.name)}<span class="ci">run ${esc(p.run_id)}${p.complete ? "" : " · incomplete"}</span></td>
+      <td class="num">${esc(p.solved_display)}</td><td class="num">${cell(p.pass_rate)}</td><td class="num">${cell(p.cost_per_solved)}</td>
+      <td class="num">${cell(p.latency_p50)}</td><td class="num">${cell(p.latency_p95)}</td><td class="num">${cell(p.wall_p50)}</td>
+      <td class="num">${cell(p.escalation_rate)}</td><td class="num">${cell(p.calls_per_task)}</td></tr>`).join("")}
+    </tbody></table></div>
+    <div class="figure" data-figure data-src="pass_vs_cost"></div>`);
+
+  // 3. Paired comparison
+  const metrics = [...new Set(R.paired.map(d => d.metric))];
+  h += section("paired", `Paired comparison against ${C.baseline}`, `
+    <p>Each policy is compared with ${esc(C.baseline)} on the same tasks: the bootstrap resamples tasks jointly and the interval is on the per-task difference, not two separate intervals. A difference is claimed only when its interval excludes zero.</p>
+    <ul class="findings">${R.headline.map(x => `<li>${esc(x)}</li>`).join("")}</ul>
+    <div class="card scroll"><table><thead><tr><th>Comparison</th>${metrics.map(m => `<th class="num">${esc(R.paired.find(d => d.metric === m).label)}</th>`).join("")}</tr></thead><tbody>
+    ${[...new Set(R.paired.map(d => d.policy))].map(pid => `<tr><td><strong>${esc(pid)}</strong> vs ${esc(C.baseline)}</td>${metrics.map(m => {
+        const d = R.paired.find(x => x.policy === pid && x.metric === m);
+        return `<td class="num">${cell(d.diff)}<span class="verdict ${verdictClass(d.verdict)}">${esc(d.verdict)}</span></td>`; }).join("")}</tr>`).join("")}
+    </tbody></table></div>
+    <div class="figure" data-figure data-src="paired_pass_rate"></div>
+    <div class="figure" data-figure data-src="paired_cost_per_solved"></div>`);
+
+  // 4. Race replay
+  const others = P.filter(p => p.id !== C.baseline).map(p => p.id);
+  const defPol = others.includes(C.replay_default_policy) ? C.replay_default_policy : others[0];
+  h += section("race", "Race replay", `
+    <p>Two lanes, ${esc(C.baseline)} against a policy you choose, drawn only from trace timings: each block is one model call (coloured by backend), each grey bar a test run, each hatched bar time spent waiting in the rate limiter. Dashed outlines mark calls served from the cache. Tasks run back to back as they did in the experiment.</p>
+    <div class="controls">
+      <label>Policy<select id="r-pol">${others.map(id => `<option value="${esc(id)}"${id === defPol ? " selected" : ""}>${esc(id)} ${esc(pol[id].name)}</option>`).join("")}</select></label>
+      <label>Scope<select id="r-scope"><option value="all">all tasks back to back</option><option value="one">one task</option></select></label>
+      <label>Task<select id="r-task" disabled>${R.tasks.map(t => `<option value="${esc(t.task_id)}">${esc(t.task_id)} ${esc(t.entry_point || "")}</option>`).join("")}</select></label>
+      <label>Clock<select id="r-clock"><option value="wall">wall clock (with queue wait)</option><option value="model">latency (queue wait excluded)</option></select></label>
+      <button class="primary" id="r-play" type="button">Play</button><button id="r-reset" type="button">Reset</button>
+    </div>
+    <div class="legend"><span><span class="sw" style="background:var(--s1)"></span>local-small</span><span><span class="sw" style="background:var(--s2)"></span>groq-small</span><span><span class="sw" style="background:var(--s3)"></span>groq-large</span><span><span class="sw" style="background:var(--test)"></span>test run</span><span><span class="sw queue"></span>queue wait</span><span><span class="pass">✓</span> solved · <span class="fail">✗</span> failed</span></div>
+    <div class="card" id="r-lanes"></div>`);
+
+  // 5. Tradeoffs rejected
+  h += section("tradeoffs", "Design tradeoffs rejected", `
+    <ul class="findings">
+      <li><strong>A learned router.</strong> Training a router needs far more labelled traces than this experiment produces, and it would hide the question this lab asks: do simple, legible policies already capture the benefit? It is a separate project; these traces are its seed data.</li>
+      <li><strong>Racing backends in parallel.</strong> Sending every stage to all backends and keeping the first passing patch would minimise latency, but it spends every model's budget on every task. On per-model free-tier limits that is the opposite of what routing is for, and it makes cost comparisons meaningless.</li>
+      <li><strong>Model-judged verification.</strong> A model grading patches can be fooled and can be wrong in correlated ways with the model that wrote the patch. The real test suite cannot be argued with, which is what makes P3's escalation signal trustworthy. Its blind spot, patches that satisfy the tests without fixing the bug, is probed separately in the failure gallery.</li>
+    </ul>`);
+
+  // 6. Failure gallery
+  const codeFor = tid => { const c = R.task_code[tid]; return c ? `<details><summary>buggy code and reference fix</summary><pre>${esc(c.buggy)}</pre><pre>${esc(c.reference)}</pre></details>` : ""; };
+  const stderr = s => s ? `<details><summary>test output</summary><pre>${esc(s)}</pre></details>` : "";
+  const list = (items, fn, empty) => items.length ? items.map(fn).join("") : `<p class="meta">${esc(empty)}</p>`;
+  const pids = P.map(p => p.id);
+  h += section("failures", "Failure gallery", `
+    <h3>Every task under every policy</h3>
+    <div class="scroll"><div class="grid-tasks" style="--cols:${pids.length}" role="table" aria-label="Pass or fail per task and policy">
+      <div class="h" style="text-align:left">Task</div>${pids.map(p => `<div class="h">${esc(p)}</div>`).join("")}
+      ${R.tasks.map(t => `<div>${esc(t.task_id)} <span class="meta">${esc(t.bug_type || "")}</span></div>${pids.map(p => {
+        const x = t.per_policy[p]; if (!x) return `<div class="cell meta">–</div>`;
+        return `<div class="cell ${x.passed ? "pass" : "fail"}" data-tip="${esc(`${p} ${t.task_id}: ${x.passed ? "solved" : "failed (" + x.status + ")"} · ${x.path_display} · ${x.cost_display} · ${x.wall_display}`)}">${x.passed ? "✓" : "✗"}</div>`; }).join("")}`).join("")}
+    </div></div>
+
+    <h3>Tasks every policy fails</h3>
+    ${list(F.all_fail, x => `<div class="card"><strong>${esc(x.task_id)}</strong> <span class="tag">${esc(x.bug_type)}</span><p>${esc(x.likely_reason)}</p>${stderr(Object.values(x.per_policy)[0].stderr_tail)}${codeFor(x.task_id)}</div>`, "None: every task was solved by at least one policy.")}
+
+    <h3>P3 escalated and still failed</h3>
+    <p>${esc(F.p3_escalated_failed.count)} tasks; the escalation calls spent ${esc(F.p3_escalated_failed.tokens_display)} tokens (${esc(F.p3_escalated_failed.cost_display)} list price) for nothing.</p>
+    ${list(F.p3_escalated_failed.tasks, x => `<div class="card"><strong>${esc(x.task_id)}</strong> <span class="tag">${esc(x.path)}</span><p>${esc(x.reason)} · ${esc(x.escalation_tokens_display)} tokens, ${esc(x.escalation_cost_display)} wasted</p>${stderr(x.stderr_tail)}${codeFor(x.task_id)}</div>`, "None.")}
+
+    <h3>Small model passed where the large model failed</h3>
+    ${list(F.small_beats_large, x => `<div class="card"><strong>${esc(x.task_id)}</strong> <span class="tag">${esc(x.bug_type)}</span><p>${esc(x.small_winners.join(", "))} solved it; ${esc(C.baseline)} failed: ${esc(x.large_failure.reason)}.</p>${stderr(x.large_failure.stderr_tail)}${codeFor(x.task_id)}</div>`, "None.")}
+
+    <h3>Where routing loses to the baseline</h3>
+    <p>Tasks ${esc(C.baseline)} solved and a routed policy did not, with the reason from the final test run.</p>
+    ${list(F.routing_losses, x => `<div class="card"><strong>${esc(x.policy)}</strong> on <strong>${esc(x.task_id)}</strong> <span class="tag">${esc(x.bug_type)}</span><p>${esc(x.reason)} · path ${esc(x.path)} · ${esc(x.cost_display)}</p>${stderr(x.stderr_tail)}${codeFor(x.task_id)}</div>`, "None: no routed policy lost a task the baseline solved.")}
+
+    <h3>Patches that pass the tests but are plainly wrong</h3>
+    <p>The tests are both the feedback and the verifier, so a patch can pass by fitting them. Every passing patch (${esc(F.plainly_wrong.probed_display)} unique) was run against the reference on perturbed test inputs; disagreements are candidates until a person confirms them in <code>analysis/annotations.yaml</code>.</p>
+    ${list(F.plainly_wrong.confirmed, x => `<div class="card"><strong>Confirmed:</strong> ${esc(x.task_id)} (${esc(x.policy)}): ${esc(x.note)}</div>`, "No confirmed cases yet.")}
+    ${F.plainly_wrong.candidates.map(x => `<div class="card"><strong>Candidate:</strong> ${esc(x.task_id)} (${esc(x.policies.join(", "))}) disagrees with the reference on ${esc(x.display)} perturbed inputs.<pre>${esc(x.examples.map(e => `${e.args}\n  reference: ${e.reference}\n  patch:     ${e.patch}`).join("\n"))}</pre></div>`).join("")}
+
+    <h3>Dataset contamination</h3>
+    <p>HumanEvalFix is public, and the underlying HumanEval problems are among the most copied snippets on the web. Every model here may have seen them, which inflates pass rates for every policy. Compare the policies with each other, not with published scores.</p>`);
+
+  // 7. Cost and latency
+  const hw = R.hardware;
+  h += section("cost", "Cost and latency", `
+    <div class="card scroll"><table><thead><tr><th>Policy</th><th>Backend</th><th class="num">Calls</th><th class="num">Prompt tokens</th><th class="num">Completion tokens</th><th class="num">List-price cost</th></tr></thead><tbody>
+    ${P.map(p => Object.entries(p.tokens_by_backend).map(([b, t], i) => `<tr><td>${i ? "" : `<strong>${esc(p.id)}</strong>`}</td><td>${esc(b)}</td><td class="num">${esc(t.display.calls)}</td><td class="num">${esc(t.display.prompt)}</td><td class="num">${esc(t.display.completion)}</td><td class="num">${esc(t.display.cost)}</td></tr>`).join("")).join("")}
+    </tbody></table></div>
+    <div class="card scroll"><table><thead><tr><th>Policy</th><th class="num">Model time</th><th class="num">Test time</th><th class="num">Queue wait</th><th class="num">Total list-price cost</th><th class="num">Cache hits</th></tr></thead><tbody>
+    ${P.map(p => `<tr><td><strong>${esc(p.id)}</strong> ${esc(p.name)}</td><td class="num">${esc(p.time_split.model_ms_display)}</td><td class="num">${esc(p.time_split.test_ms_display)}</td><td class="num">${esc(p.time_split.queue_ms_display)}</td><td class="num">${esc(p.total_cost_display)}</td><td class="num">${esc(p.cache_hits_display)}</td></tr>`).join("")}
+    </tbody></table></div>
+    <div class="figure" data-figure data-src="time_split"></div>
+    <h3>Hardware and dates</h3>
+    <div class="scroll"><table><tbody>
+      <tr><th>Laptop</th><td>${esc(hw.laptop_model)}</td></tr>
+      <tr><th>CPU</th><td>${esc(hw.host.cpu)} (${esc(hw.host.cpu_count)} threads)</td></tr>
+      <tr><th>RAM</th><td>${esc(hw.ram_display)}</td></tr>
+      <tr><th>OS</th><td>${esc(hw.host.os)} · Python ${esc(hw.host.python)}</td></tr>
+      <tr><th>Local model</th><td><code>${esc(hw.local_model)}</code> · quantization ${esc(hw.quantization)}</td></tr>
+      <tr><th>llama.cpp build</th><td>${esc(hw.llama_cpp_build)}</td></tr>
+      <tr><th>Sandbox</th><td>${esc(hw.sandbox.mode)} · network ${esc(hw.sandbox.network)} · timeout ${esc(C.sandbox_timeout_display)}</td></tr>
+      <tr><th>Groq runs</th><td>${esc(hw.groq_run_dates_display)}</td></tr>
+    </tbody></table></div>
+    <h3>Backend profile</h3>
+    ${R.profile.length ? `<div class="scroll"><table><thead><tr><th>Backend</th><th>Model</th><th class="num">Prompts</th><th class="num">Time to first token p50</th><th class="num">IQR</th><th class="num">Tokens/s p50</th><th class="num">IQR</th></tr></thead><tbody>
+      ${R.profile.map(r => `<tr><td>${esc(r.backend)}</td><td><code>${esc(r.model_id)}</code></td><td class="num">${esc(r.n_display)}</td><td class="num">${esc(r.display.ttft_p50)}</td><td class="num">${esc(r.display.ttft_iqr)}</td><td class="num">${esc(r.display.tps_p50)}</td><td class="num">${esc(r.display.tps_iqr)}</td></tr>`).join("")}
+    </tbody></table></div>` : `<p class="meta">No profile traces yet. Run <code>make profile</code> first.</p>`}
+    ${R.noise.length ? `<h3>Run-to-run noise</h3>${R.noise.map(n => `<p><strong>${esc(n.policy)}</strong>: ${n.runs.map(r => `${esc(r.run_id)} (temperature ${esc(r.temperature)}) ${esc(r.display)}`).join(" · ")}; spread ${esc(n.spread_display)}</p>`).join("")}` : ""}`);
+
+  // 8. Reproduce
+  h += section("repro", "Reproduce every number", `
+    <p>From a clean clone, <code>${esc(R.repro.command)}</code> replays every stored run from the response cache (no API calls: a cache miss fails loudly), checks that each replayed call matches its trace, re-runs every test in the sandbox, and rebuilds every table, figure and this page's data.</p>
+    <pre>${esc(R.repro.command)}</pre>
+    <p>${R.repro.from_replay ? `Last rebuild took ${esc(R.repro.total_display)} with ${esc(R.repro.api_calls)} API calls.` : `This file was built directly from traces by <code>make analyze</code> in ${esc(R.repro.total_display)}.`} ${R.repro.mismatches.length ? `<span class="err">Replay mismatches: ${esc(R.repro.mismatches.join("; "))}</span>` : ""}</p>
+    <div class="scroll"><table><thead><tr><th>Run</th><th>Policy</th><th class="num">Temperature</th><th class="num">Tasks</th><th>Used here</th></tr></thead><tbody>
+    ${R.runs.map(r => `<tr><td>${esc(r.run_id)}</td><td>${esc(r.policy)}</td><td class="num">${esc(r.temperature)}</td><td class="num">${esc(r.tasks_display)}</td><td>${r.primary ? "primary" : "noise"}</td></tr>`).join("")}
+    </tbody></table></div>`);
+
+  $("#root").innerHTML = h;
+  loadFigures(R);
+  bindTips($("#root"));
+  setupRace(R);
+}
+
+function loadFigures(R) {
+  document.querySelectorAll("[data-src]").forEach(el => {
+    const rel = R.figures[el.dataset.src];
+    if (!rel) return;
+    fetch(base + rel).then(r => r.ok ? r.text() : Promise.reject(r.status)).then(svg => { el.innerHTML = svg; })
+      .catch(() => { el.innerHTML = `<p class="meta">Figure ${esc(rel)} not found.</p>`; });
+  });
+}
+
+// ---- race replay ---------------------------------------------------------
+function setupRace(R) {
+  const C = R.config;
+  const els = { pol: $("#r-pol"), scope: $("#r-scope"), task: $("#r-task"), clock: $("#r-clock"), play: $("#r-play"), reset: $("#r-reset"), lanes: $("#r-lanes") };
+  if (!els.pol) return;
+  let raf = null, startTs = 0, pausedAt = 0, playing = false, lanes = [], span = 1;
+
+  function laneData(pid) {
+    const withQueue = els.clock.value === "wall";
+    const tasks = els.scope.value === "one" ? R.tasks.filter(t => t.task_id === els.task.value) : R.tasks;
+    const segs = [], marks = [];
+    let t = 0;
+    for (const task of tasks) {
+      const x = task.per_policy[pid];
+      if (!x) continue;
+      for (const e of x.timeline) {
+        if (e.kind === "queue" && !withQueue) continue;
+        segs.push({ ...e, t0: t, task: task.task_id });
+        t += e.dur;
+      }
+      marks.push({ t, passed: x.passed, task: task.task_id, cost: x.cost, display: x });
+    }
+    const p = R.policies.find(p => p.id === pid);
+    const one = els.scope.value === "one" ? tasks[0].per_policy[pid] : null;
+    const final = one
+      ? { time: withQueue ? one.wall_display : one.latency_display, solved: one.passed ? "1/1" : "0/1", cost: one.cost_display }
+      : { time: withQueue ? p.wall_sum_display : p.latency_sum_display, solved: p.solved_display, cost: p.total_cost_display };
+    return { pid, name: p.name, segs, marks, total: t, final, n: marks.length };
+  }
+
+  function draw() {
+    lanes = [laneData(C.baseline), laneData(els.pol.value)];
+    span = Math.max(...lanes.map(l => l.total), 1);
+    els.lanes.innerHTML = lanes.map((l, i) => `
+      <div class="lane">
+        <div class="lane-head"><strong>${esc(l.pid)} ${esc(l.name)}</strong>
+          <span class="stats"><span>time <b data-live id="l${i}-time">–</b></span><span>solved <b data-live id="l${i}-solved">–</b></span><span>cost <b data-live id="l${i}-cost">–</b></span></span></div>
+        <div class="track" id="l${i}-track">
+          ${l.segs.map(s => `<div class="seg ${s.kind === "model" ? "b-" + s.backend + (s.cache_hit ? " cache" : "") : s.kind}" style="left:${(s.t0 / span * 100).toFixed(4)}%;width:${Math.max(s.dur / span * 100, 0.15).toFixed(4)}%" data-tip="${esc(`${s.task} · ${s.kind === "model" ? s.stage + " on " + s.backend + (s.cache_hit ? " (cache hit)" : "") : s.kind === "test" ? "test run, " + (s.passed ? "passed" : "failed") : "queue wait"} · ${s.dur} ms`)}"></div>`).join("")}
+          ${l.marks.length <= 60 ? l.marks.map(m => `<div class="tick" style="left:${(m.t / span * 100).toFixed(4)}%"></div>`).join("") : ""}
+          <div class="shade" id="l${i}-shade" style="left:0%"></div>
+          <div class="playhead" id="l${i}-head" style="left:0%"></div>
+        </div>
+      </div>`).join("") + `<p class="meta">Both lanes share one time axis. Hover any block for its trace values.</p>`;
+    bindTips(els.lanes);
+    setTime(0);
+  }
+
+  function setTime(tms) {
+    lanes.forEach((l, i) => {
+      const done = Math.min(tms, l.total);
+      const pct = (done / span * 100).toFixed(4) + "%";
+      $(`#l${i}-head`).style.left = pct;
+      $(`#l${i}-shade`).style.left = pct;
+      const finished = tms >= l.total;
+      if (finished && tms > 0) {
+        $(`#l${i}-time`).textContent = l.final.time;
+        $(`#l${i}-solved`).textContent = l.final.solved;
+        $(`#l${i}-cost`).textContent = l.final.cost;
+      } else if (tms === 0) {
+        ["time", "solved", "cost"].forEach(k => { $(`#l${i}-${k}`).textContent = "–"; });
+      } else {
+        const ended = l.marks.filter(m => m.t <= done);
+        const cost = l.segs.filter(s => s.kind === "model" && s.t0 + s.dur <= done).reduce((a, s) => a + s.cost, 0);
+        $(`#l${i}-time`).textContent = (done / 1000).toFixed(1) + " s";
+        $(`#l${i}-solved`).textContent = `${ended.filter(m => m.passed).length}/${l.n}`;
+        $(`#l${i}-cost`).textContent = "$" + cost.toPrecision(3);
+      }
+    });
+  }
+
+  const DURATION = 12000; // the whole race plays in about 12 s
+  function frame(ts) {
+    const t = (ts - startTs) / DURATION * span;
+    setTime(Math.min(t, span));
+    if (t < span && playing) raf = requestAnimationFrame(frame);
+    else { playing = false; els.play.textContent = "Play"; pausedAt = t >= span ? 0 : t; if (t >= span) setTime(span); }
+  }
+  els.play.addEventListener("click", () => {
+    if (playing) { playing = false; cancelAnimationFrame(raf); els.play.textContent = "Play";
+      pausedAt = (performance.now() - startTs) / DURATION * span; return; }
+    playing = true; els.play.textContent = "Pause";
+    startTs = performance.now() - pausedAt / span * DURATION;
+    raf = requestAnimationFrame(frame);
+  });
+  els.reset.addEventListener("click", () => { playing = false; cancelAnimationFrame(raf); pausedAt = 0; els.play.textContent = "Play"; setTime(0); });
+  const redraw = () => { playing = false; cancelAnimationFrame(raf); pausedAt = 0; els.play.textContent = "Play"; els.task.disabled = els.scope.value !== "one"; draw(); };
+  [els.pol, els.scope, els.task, els.clock].forEach(e => e.addEventListener("change", redraw));
+  draw();
+  // With reduced motion requested, show the finished race straight away.
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches) setTime(span);
+}
+})();
+</script>
+</body>
+</html>

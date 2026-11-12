@@ -1,0 +1,22 @@
+{
+ "key": "6d96b43a087df1a7d9ee63b225320d97daa6d55663249fa0c9e88bcbed69ee14",
+ "created_at": "2026-11-12T09:31:17.101+00:00",
+ "request": {
+  "backend": "groq-small",
+  "model_id": "sim-groq-8b",
+  "params": {
+   "max_tokens": 200,
+   "temperature": 0.0
+  },
+  "prompt": "A Python function fails its tests.\n\nCode:\n```python\ndef strlen(string: str) -> int:\n    return len(string) - 1\n```\n\nTest output:\n```\nTraceback (most recent call last):\n  File \"solution.py\", line 25, in <module>\n    check(strlen)\n    ~~~~~^^^^^^^^\n  File \"solution.py\", line 21, in check\n    assert strlen('') == 0\n           ^^^^^^^^^^^^^^^\nAssertionError\n```\n\nIn at most three sentences, state the root cause of the bug. Do not write code."
+ },
+ "response": {
+  "text": "The bug in `strlen` is probably value misuse, which produces incorrect output (sim-groq-8b).",
+  "prompt_tokens": 110,
+  "completion_tokens": 23,
+  "ttft_ms": 180.3,
+  "total_ms": 210.4,
+  "tokens_estimated": true,
+  "queue_wait_ms": 0.0
+ }
+}

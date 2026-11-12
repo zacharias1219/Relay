@@ -1,0 +1,22 @@
+{
+ "key": "fef33e8608fabb0226e0d2e59b003aa6fbf9ec31dfa2453408981ef35d0fb87c",
+ "created_at": "2026-11-12T09:31:17.404+00:00",
+ "request": {
+  "backend": "groq-small",
+  "model_id": "sim-groq-8b",
+  "params": {
+   "max_tokens": 200,
+   "temperature": 0.0
+  },
+  "prompt": "A Python function fails its tests.\n\nCode:\n```python\ndef triangle_area(a, h):\n    return a * h / 0.5\n```\n\nTest output:\n```\nTraceback (most recent call last):\n  File \"solution.py\", line 25, in <module>\n    check(triangle_area)\n    ~~~~~^^^^^^^^^^^^^^^\n  File \"solution.py\", line 21, in check\n    assert triangle_area(5, 3) == 7.5\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n```\n\nIn at most three sentences, state the root cause of the bug. Do not write code."
+ },
+ "response": {
+  "text": "The bug in `triangle_area` seems to be value misuse, which produces incorrect output (sim-groq-8b).",
+  "prompt_tokens": 116,
+  "completion_tokens": 24,
+  "ttft_ms": 184.6,
+  "total_ms": 226.6,
+  "tokens_estimated": true,
+  "queue_wait_ms": 0.0
+ }
+}

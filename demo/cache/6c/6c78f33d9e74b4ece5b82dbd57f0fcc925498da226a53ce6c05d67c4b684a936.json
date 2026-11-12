@@ -1,0 +1,22 @@
+{
+ "key": "6c78f33d9e74b4ece5b82dbd57f0fcc925498da226a53ce6c05d67c4b684a936",
+ "created_at": "2026-11-12T09:31:17.016+00:00",
+ "request": {
+  "backend": "groq-small",
+  "model_id": "sim-groq-8b",
+  "params": {
+   "max_tokens": 1024,
+   "temperature": 0.0
+  },
+  "prompt": "Fix the bug in this Python function.\n\nCode:\n```python\nfrom typing import List\n\n\ndef rescale_to_unit(numbers: List[float]) -> List[float]:\n    min_number = min(numbers)\n    max_number = max(numbers)\n    return [(x - min_number) / (max_number + min_number) for x in numbers]\n```\n\nTest output:\n```\nTraceback (most recent call last):\n  File \"solution.py\", line 32, in <module>\n    check(rescale_to_unit)\n    ~~~~~^^^^^^^^^^^^^^^^^\n  File \"solution.py\", line 26, in check\n    assert rescale_to_unit([2.0, 49.9]) == [0.0, 1.0]\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n```\n\nDiagnosis: The bug in `rescale_to_unit` is probably operator misuse, which produces incorrect output (sim-groq-8b).\n\nReturn the complete corrected function, with any imports it needs, in a single ```python code block. No explanation."
+ },
+ "response": {
+  "text": "```python\nfrom typing import List\n\n\ndef rescale_to_unit(numbers: List[float]) -> List[float]:\n    min_number = min(numbers)\n    max_number = max(numbers)\n    return [(x - min_number) / (max_number - min_number) for x in numbers]\n```",
+  "prompt_tokens": 207,
+  "completion_tokens": 58,
+  "ttft_ms": 126.3,
+  "total_ms": 202.4,
+  "tokens_estimated": true,
+  "queue_wait_ms": 0.0
+ }
+}

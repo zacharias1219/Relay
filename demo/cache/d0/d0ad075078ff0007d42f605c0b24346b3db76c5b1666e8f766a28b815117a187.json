@@ -1,0 +1,22 @@
+{
+ "key": "d0ad075078ff0007d42f605c0b24346b3db76c5b1666e8f766a28b815117a187",
+ "created_at": "2026-11-12T09:31:20.077+00:00",
+ "request": {
+  "backend": "groq-small",
+  "model_id": "sim-groq-8b",
+  "params": {
+   "max_tokens": 200,
+   "temperature": 0.0
+  },
+  "prompt": "A Python function fails its tests.\n\nCode:\n```python\ndef generate_integers(a, b):\n    lower = max(2, min(a, b))\n    upper = min(8, max(a, b))\n\n    return [i for i in range(lower, upper) if i % 2 == 0]\n```\n\nTest output:\n```\nTraceback (most recent call last):\n  File \"solution.py\", line 29, in <module>\n    check(generate_integers)\n    ~~~~~^^^^^^^^^^^^^^^^^^^\n  File \"solution.py\", line 21, in check\n    assert generate_integers(2, 10) == [2, 4, 6, 8], \"Test 1\"\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: Test 1\n```\n\nIn at most three sentences, state the root cause of the bug. Do not write code."
+ },
+ "response": {
+  "text": "The bug in `generate_integers` is probably value misuse, which produces incorrect output (sim-groq-8b).",
+  "prompt_tokens": 154,
+  "completion_tokens": 25,
+  "ttft_ms": 171.8,
+  "total_ms": 212.4,
+  "tokens_estimated": true,
+  "queue_wait_ms": 0.0
+ }
+}

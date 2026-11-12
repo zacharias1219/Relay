@@ -1,0 +1,22 @@
+{
+ "key": "a22f13087e32366c0963ccdc74356e32acc85202e8feab71bcff9492ad2788b6",
+ "created_at": "2026-11-12T09:31:23.678+00:00",
+ "request": {
+  "backend": "local-small",
+  "model_id": "sim-local-7b",
+  "params": {
+   "max_tokens": 1024,
+   "temperature": 0.0
+  },
+  "prompt": "Fix the bug in this Python function.\n\nCode:\n```python\nfrom typing import List\n\n\ndef parse_nested_parens(paren_string: str) -> List[int]:\n    def parse_paren_group(s):\n        depth = 0\n        max_depth = 0\n        for c in s:\n            if c == '(':\n                depth += 1\n                max_depth = max(depth, max_depth)\n            else:\n                max_depth -= 1\n\n        return max_depth\n\n    return [parse_paren_group(x) for x in paren_string.split(' ') if x]\n```\n\nTest output:\n```\nTraceback (most recent call last):\n  File \"solution.py\", line 40, in <module>\n    check(parse_nested_parens)\n    ~~~~~^^^^^^^^^^^^^^^^^^^^^\n  File \"solution.py\", line 36, in check\n    assert parse_nested_parens('(()()) ((())) () ((())()())') == [2, 3, 1, 3]\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n```\n\nReturn the complete corrected function, with any imports it needs, in a single ```python code block. No explanation."
+ },
+ "response": {
+  "text": "```python\nfrom typing import List\n\n\ndef parse_nested_parens(paren_string: str) -> List[int]:\n    def parse_paren_group(s):\n        depth = 0\n        max_depth = 0\n        for c in s:\n            if c == '(':\n                depth += 1\n                max_depth = max(depth, max_depth)\n            else:\n                max_depth -= 1\n\n        return max_depth\n\n    return [parse_paren_group(x) for x in paren_string.split(' ') if x]\n```",
+  "prompt_tokens": 242,
+  "completion_tokens": 109,
+  "ttft_ms": 864.6,
+  "total_ms": 6069.2,
+  "tokens_estimated": true,
+  "queue_wait_ms": 0.0
+ }
+}

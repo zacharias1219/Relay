@@ -1,0 +1,22 @@
+{
+ "key": "4268fbcc3dc802091d045d0ffc3fe9a88c6f36eec5b323dbc1cc9005121652ca",
+ "created_at": "2026-11-12T09:31:24.084+00:00",
+ "request": {
+  "backend": "local-small",
+  "model_id": "sim-local-7b",
+  "params": {
+   "max_tokens": 1024,
+   "temperature": 0.0
+  },
+  "prompt": "Fix the bug in this Python function.\n\nCode:\n```python\ndef greatest_common_divisor(a: int, b: int) -> int:\n    while b:\n        a, b = b, a % b\n    return b\n```\n\nTest output:\n```\nTraceback (most recent call last):\n  File \"solution.py\", line 28, in <module>\n    check(greatest_common_divisor)\n    ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"solution.py\", line 23, in check\n    assert greatest_common_divisor(3, 7) == 1\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n```\n\nReturn the complete corrected function, with any imports it needs, in a single ```python code block. No explanation."
+ },
+ "response": {
+  "text": "```python\ndef greatest_common_divisor(a: int, b: int) -> int:\n    while b:\n        a, b = b, a % b\n    return a\n```",
+  "prompt_tokens": 148,
+  "completion_tokens": 28,
+  "ttft_ms": 1123.5,
+  "total_ms": 2993.9,
+  "tokens_estimated": true,
+  "queue_wait_ms": 0.0
+ }
+}

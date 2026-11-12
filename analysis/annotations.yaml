@@ -1,0 +1,19 @@
+# Human judgement that the traces cannot supply. The analysis reads this file
+# and nothing else beyond the traces and the cache.
+#
+# failure_reasons: override the automatic "likely reason" for a task.
+#   HumanEvalFix/12: "the model rewrote the tie-break rule instead of the comparison"
+#
+# plainly_wrong: patches that pass the tests but are wrong. Start from the
+# overfit-probe candidates in results/tables/failures.md, read the patch, and
+# confirm here with the code_hash shown there.
+#   - task_id: HumanEvalFix/12
+#     policy: P1
+#     code_hash: "<sha256 from the candidate list>"
+#     note: "hard-codes the three tested inputs"
+#
+# dismissed: candidates you read and judged fine (e.g. the perturbed input is
+# outside the documented domain). Same keys: task_id, code_hash, note.
+failure_reasons: {}
+plainly_wrong: []
+dismissed: []

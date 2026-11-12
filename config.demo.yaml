@@ -1,0 +1,40 @@
+# Offline demo: the same pipeline with SIMULATED backends.
+#
+# Nothing here measures a real model. The `sim` backends are a deterministic
+# oracle simulator (relay/backends.py: SimBackend) with made-up skill, latency
+# and queueing numbers, so the whole pipeline - runner, cache, traces, sandbox,
+# evalkit, analysis, replay page - can run and be tested with no API key.
+# Every trace and the results page carry `synthetic: true`.
+extends: config.yaml
+
+paths:
+  traces_dir: demo/traces
+  cache_dir: demo/cache
+  state_dir: build/demo-state
+  results_json: replay/demo-results.json
+  tables_dir: demo/results/tables
+  figures_dir: demo/results/figures
+  repro_dir: build/demo-repro
+
+backends:
+  local-small:
+    kind: sim
+    model_id: sim-local-7b
+    sim: { skill: 0.42, ttft_ms: 900, tokens_per_s: 18,
+           difficulty: { "missing logic": 0.2, "excess logic": 0.1, "function misuse": 0.1 } }
+  groq-small:
+    kind: sim
+    model_id: sim-groq-8b
+    sim: { skill: 0.55, diagnosis_boost: 0.05, ttft_ms: 180, tokens_per_s: 650,
+           difficulty: { "missing logic": 0.2, "excess logic": 0.1 },
+           queue_ms: { p: 0.15, ms: 2500 } }
+  groq-large:
+    kind: sim
+    model_id: sim-groq-70b
+    sim: { skill: 0.78, diagnosis_boost: 0.08, ttft_ms: 260, tokens_per_s: 260,
+           difficulty: { "missing logic": 0.15 },
+           queue_ms: { p: 0.35, ms: 4000 } }
+
+hardware:
+  laptop_model: "n/a (simulated demo)"
+  llama_cpp_build: "n/a (simulated demo)"

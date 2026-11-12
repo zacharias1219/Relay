@@ -1,0 +1,22 @@
+{
+ "key": "225b26a56969d6e3314e92356e63fb4b6d3736832643c24b3901df6cd5f7a4b3",
+ "created_at": "2026-11-12T09:31:16.511+00:00",
+ "request": {
+  "backend": "groq-small",
+  "model_id": "sim-groq-8b",
+  "params": {
+   "max_tokens": 1024,
+   "temperature": 0.0
+  },
+  "prompt": "Fix the bug in this Python function.\n\nCode:\n```python\nfrom typing import List\n\n\ndef mean_absolute_deviation(numbers: List[float]) -> float:\n    mean = sum(numbers) / len(numbers)\n    return sum(abs(x - mean) for x in numbers) / mean\n```\n\nTest output:\n```\nTraceback (most recent call last):\n  File \"solution.py\", line 29, in <module>\n    check(mean_absolute_deviation)\n    ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"solution.py\", line 25, in check\n    assert abs(mean_absolute_deviation([1.0, 2.0, 3.0]) - 2.0/3.0) < 1e-6\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n```\n\nDiagnosis: The bug in `mean_absolute_deviation` is probably variable misuse, which produces incorrect output (sim-groq-8b).\n\nReturn the complete corrected function, with any imports it needs, in a single ```python code block. No explanation."
+ },
+ "response": {
+  "text": "```python\nfrom typing import List\n\n\ndef mean_absolute_deviation(numbers: List[float]) -> float:\n    mean = sum(numbers) / len(numbers)\n    return sum(abs(x - mean) for x in numbers) / len(numbers)\n```",
+  "prompt_tokens": 213,
+  "completion_tokens": 50,
+  "ttft_ms": 141.0,
+  "total_ms": 220.7,
+  "tokens_estimated": true,
+  "queue_wait_ms": 0.0
+ }
+}

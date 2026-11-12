@@ -1,0 +1,111 @@
+# Relay experiment configuration.
+#
+# Model ids live here and nowhere else. Groq retires and renames models, so run
+#   python -m relay models
+# before every batch: it lists the ids your account can see and flags any
+# configured id that is missing.
+
+experiment:
+  name: relay-humanevalfix-python
+  seed: 20261112            # fixes the 40-task sample and every bootstrap
+  n_tasks: 40
+  max_model_calls_per_task: 4
+  temperature: 0.0          # primary runs; noise runs override with --temperature
+
+paths:
+  data_file: data/humanevalfix_python.jsonl
+  tasks_file: data/tasks.json
+  traces_dir: traces
+  cache_dir: cache
+  state_dir: state          # daily usage ledger for the rate limiter (git-ignored)
+  results_json: replay/results.json
+  tables_dir: results/tables
+  figures_dir: results/figures
+  annotations: analysis/annotations.yaml
+  repro_dir: build/repro
+
+dataset:
+  # HumanEvalFix (Python split of HumanEvalPack, MIT licence).
+  # Tried in order; the first source that answers wins. The sha256 of the
+  # downloaded file is recorded in data/SOURCE.json.
+  sources:
+    - https://huggingface.co/datasets/bigcode/humanevalpack/resolve/main/data/python/data/humanevalpack.jsonl
+    - https://raw.githubusercontent.com/bigcode-project/octopack/main/evaluation/create/humaneval-x/data/python/data/humanevalpack.jsonl
+
+backends:
+  local-small:
+    kind: llamacpp
+    role: cheapest first attempt
+    runs_on: your laptop via llama.cpp server
+    base_url: http://127.0.0.1:8080/v1
+    # Label only: llama.cpp serves whatever GGUF you loaded. Keep the
+    # quantization in the label so it lands in every trace and cache key.
+    model_id: qwen2.5-coder-7b-instruct-q4_k_m
+    quantization: Q4_K_M
+    price_per_mtok: { input: 0.0, output: 0.0 }
+    timeout_s: 300
+  groq-small:
+    kind: groq
+    role: fast, cheap
+    runs_on: Groq
+    base_url: https://api.groq.com/openai/v1
+    model_id: llama-3.1-8b-instant
+    # USD per million tokens, list price. Check https://groq.com/pricing
+    # before the first run and update; cost is reported as list-price
+    # equivalent because free-tier usage is free.
+    price_per_mtok: { input: 0.05, output: 0.08 }
+    limits: { rpm: 30, rpd: 14400, tpm: 6000, tpd: 500000 }
+    timeout_s: 120
+  groq-large:
+    kind: groq
+    role: strongest available
+    runs_on: Groq
+    base_url: https://api.groq.com/openai/v1
+    model_id: llama-3.3-70b-versatile
+    # Alternative 120B-class option: openai/gpt-oss-120b (a reasoning model;
+    # add extra_params: { reasoning_effort: low } and raise max_tokens.patch).
+    price_per_mtok: { input: 0.59, output: 0.79 }
+    limits: { rpm: 30, rpd: 1000, tpm: 12000, tpd: 100000 }
+    timeout_s: 120
+
+# The limits above are placeholders shaped like Groq's published free-tier
+# sample (30 RPM, 1,000 RPD, 8,000 TPM, 200,000 TPD for text models). Your
+# console limits page (console.groq.com/settings/limits) is the authority:
+# copy your numbers in. The limiter runs at `safety` x these values.
+ratelimit:
+  safety: 0.85
+  max_retries: 6            # on 429 / 5xx, after honouring retry-after
+  backoff_s: 2.0
+
+generation:
+  max_tokens:
+    diagnose: 200
+    patch: 1024
+  # Diagnose output is truncated to this many characters before it is
+  # passed to the patch stage, to keep prompts short.
+  diagnosis_max_chars: 800
+  test_output_max_chars: 1500
+
+sandbox:
+  mode: subprocess          # subprocess (Linux/WSL/macOS) or docker
+  timeout_s: 10
+  memory_mb: 1024
+  network: "off"            # subprocess: unshare -rn when available + socket guard
+  docker_image: python:3.12-slim
+
+analysis:
+  bootstrap_resamples: 10000
+  ci_level: 0.95
+  baseline_policy: P0
+  replay_default_policy: P3
+  # Overfit probe: compare each passing patch with the reference solution on
+  # perturbed versions of the test inputs. Disagreements become candidates
+  # for "passes the tests but is plainly wrong"; a human confirms them in
+  # analysis/annotations.yaml.
+  overfit_probe: true
+
+# Fill these in by hand before publishing. Auto-detected CPU/RAM/OS and the
+# llama.cpp build are recorded in each run's run_meta trace line.
+hardware:
+  laptop_model: "<your laptop model>"
+  llama_cpp_build: "<git tag or build number, e.g. b4500>"

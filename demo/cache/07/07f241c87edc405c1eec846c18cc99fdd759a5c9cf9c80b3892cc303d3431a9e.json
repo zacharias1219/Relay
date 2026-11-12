@@ -1,0 +1,22 @@
+{
+ "key": "07f241c87edc405c1eec846c18cc99fdd759a5c9cf9c80b3892cc303d3431a9e",
+ "created_at": "2026-11-12T09:31:24.843+00:00",
+ "request": {
+  "backend": "groq-small",
+  "model_id": "sim-groq-8b",
+  "params": {
+   "max_tokens": 1024,
+   "temperature": 0.0
+  },
+  "prompt": "Fix the bug in this Python function.\n\nCode:\n```python\ndef add(x: int, y: int):\n    return x + y + y + x\n```\n\nTest output:\n```\nTraceback (most recent call last):\n  File \"solution.py\", line 33, in <module>\n    check(add)\n    ~~~~~^^^^^\n  File \"solution.py\", line 23, in check\n    assert add(0, 1) == 1\n           ^^^^^^^^^^^^^^\nAssertionError\n```\n\nA previous fix was tried and still fails.\nPrevious fix:\n```python\ndef add(x: int, y: int):\n    return x + y + y + x\n```\nIts test output:\n```\nTraceback (most recent call last):\n  File \"solution.py\", line 33, in <module>\n    check(add)\n    ~~~~~^^^^^\n  File \"solution.py\", line 23, in check\n    assert add(0, 1) == 1\n           ^^^^^^^^^^^^^^\nAssertionError\n```\n\nReturn the complete corrected function, with any imports it needs, in a single ```python code block. No explanation."
+ },
+ "response": {
+  "text": "```python\ndef add(x: int, y: int):\n    return x + y + y + x\n```",
+  "prompt_tokens": 205,
+  "completion_tokens": 15,
+  "ttft_ms": 203.9,
+  "total_ms": 227.4,
+  "tokens_estimated": true,
+  "queue_wait_ms": 1425.0
+ }
+}

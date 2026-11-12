@@ -1,0 +1,22 @@
+{
+ "key": "da2401f5ec3ee604d1e78df3282edbe22dc90cc834b151afbf9cc3e512eeb65b",
+ "created_at": "2026-11-12T09:31:16.374+00:00",
+ "request": {
+  "backend": "groq-large",
+  "model_id": "sim-groq-70b",
+  "params": {
+   "max_tokens": 200,
+   "temperature": 0.0
+  },
+  "prompt": "A Python function fails its tests.\n\nCode:\n```python\ndef eat(number, need, remaining):\n    if(need <= remaining):\n        return [ number + need , number + remaining-need ]\n    else:\n        return [ number + need + remaining , 0]\n```\n\nTest output:\n```\nTraceback (most recent call last):\n  File \"solution.py\", line 32, in <module>\n    check(eat)\n    ~~~~~^^^^^\n  File \"solution.py\", line 22, in check\n    assert eat(5, 6, 10) == [11, 4], \"Error\"\n           ^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: Error\n```\n\nIn at most three sentences, state the root cause of the bug. Do not write code."
+ },
+ "response": {
+  "text": "The bug in `eat` is probably excess logic, which produces incorrect output (sim-groq-70b).",
+  "prompt_tokens": 146,
+  "completion_tokens": 22,
+  "ttft_ms": 225.7,
+  "total_ms": 329.3,
+  "tokens_estimated": true,
+  "queue_wait_ms": 0.0
+ }
+}

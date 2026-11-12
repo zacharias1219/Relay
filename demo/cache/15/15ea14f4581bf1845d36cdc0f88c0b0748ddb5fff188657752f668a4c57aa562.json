@@ -1,0 +1,22 @@
+{
+ "key": "15ea14f4581bf1845d36cdc0f88c0b0748ddb5fff188657752f668a4c57aa562",
+ "created_at": "2026-11-12T09:31:17.274+00:00",
+ "request": {
+  "backend": "groq-small",
+  "model_id": "sim-groq-8b",
+  "params": {
+   "max_tokens": 1024,
+   "temperature": 0.0
+  },
+  "prompt": "Fix the bug in this Python function.\n\nCode:\n```python\nfrom typing import List\n\n\ndef filter_by_prefix(strings: List[str], prefix: str) -> List[str]:\n    return [x for x in strings if x.endswith(prefix)]\n```\n\nTest output:\n```\nTraceback (most recent call last):\n  File \"solution.py\", line 27, in <module>\n    check(filter_by_prefix)\n    ~~~~~^^^^^^^^^^^^^^^^^^\n  File \"solution.py\", line 25, in check\n    assert filter_by_prefix(['xxx', 'asd', 'xxy', 'john doe', 'xxxAAA', 'xxx'], 'xxx') == ['xxx', 'xxxAAA', 'xxx']\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n```\n\nDiagnosis: The bug in `filter_by_prefix` is probably function misuse, which produces incorrect output (sim-groq-8b).\n\nReturn the complete corrected function, with any imports it needs, in a single ```python code block. No explanation."
+ },
+ "response": {
+  "text": "```python\nfrom typing import List\n\n\ndef filter_by_prefix(strings: List[str], prefix: str) -> List[str]:\n    return [x for x in strings if x.startswith(prefix)]\n```",
+  "prompt_tokens": 220,
+  "completion_tokens": 40,
+  "ttft_ms": 230.5,
+  "total_ms": 283.2,
+  "tokens_estimated": true,
+  "queue_wait_ms": 0.0
+ }
+}

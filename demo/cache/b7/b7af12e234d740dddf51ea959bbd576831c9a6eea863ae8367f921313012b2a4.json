@@ -1,0 +1,22 @@
+{
+ "key": "b7af12e234d740dddf51ea959bbd576831c9a6eea863ae8367f921313012b2a4",
+ "created_at": "2026-11-12T09:31:15.841+00:00",
+ "request": {
+  "backend": "groq-large",
+  "model_id": "sim-groq-70b",
+  "params": {
+   "max_tokens": 200,
+   "temperature": 0.0
+  },
+  "prompt": "A Python function fails its tests.\n\nCode:\n```python\ndef is_sorted(lst):\n    count_digit = dict([(i, 0) for i in lst])\n    for i in lst:\n        count_digit[i]+=1\n    if all(lst[i-1] <= lst[i] for i in range(1, len(lst))):\n        return True\n    else:\n        return False\n    \n    \n```\n\nTest output:\n```\nTraceback (most recent call last):\n  File \"solution.py\", line 42, in <module>\n    check(is_sorted)\n    ~~~~~^^^^^^^^^^^\n  File \"solution.py\", line 37, in check\n    assert is_sorted([1, 2, 2, 2, 3, 4]) == False, \"This prints if this assert fails 5 (good for debugging!)\"\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError: This prints if this assert fails 5 (good for debugging!)\n```\n\nIn at most three sentences, state the root cause of the bug. Do not write code."
+ },
+ "response": {
+  "text": "The bug in `is_sorted` is probably missing logic, which produces incorrect output (sim-groq-70b).",
+  "prompt_tokens": 195,
+  "completion_tokens": 24,
+  "ttft_ms": 210.3,
+  "total_ms": 290.4,
+  "tokens_estimated": true,
+  "queue_wait_ms": 0.0
+ }
+}

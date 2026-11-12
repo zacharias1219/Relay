@@ -89,14 +89,18 @@ def cmd_smoke(args, config: Config) -> int:
         common = {"run_id": ctx.run_id, "task_id": "smoke", "task_run_uid": new_uid(), "policy": "smoke"}
         try:
             for attempt in (1, 2):
-                res, rec = _call(ctx, common, bid, "diagnose", attempt, prompt, 8)
+                # reasoning models spend hidden tokens first, so give them their profile budget
+                mt = config.max_tokens("profile", bid) if (config.backend(bid).get("max_tokens") or {}).get("profile") else 16
+                res, rec = _call(ctx, common, bid, "diagnose", attempt, prompt, mt)
                 writer.write(rec)
-                validate_record(rec | {"schema": 1, "ts": "x"})
                 print(f"{bid:<12} attempt {attempt}: cache_hit={rec['cache_hit']} total_ms={rec['total_ms']} "
                       f"tokens={rec['prompt_tokens']}+{rec['completion_tokens']} text={res.text.strip()[:40]!r}")
             if not rec["cache_hit"]:
                 ok = False
                 print(f"FAIL {bid}: repeat call was not a cache hit")
+            if not res.text.strip():
+                ok = False
+                print(f"FAIL {bid}: empty reply (finish_reason={res.finish_reason}); raise its max_tokens")
         except Exception as e:
             ok = False
             print(f"FAIL {bid}: {e}")

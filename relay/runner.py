@@ -109,6 +109,8 @@ def _call(ctx: RunContext, common: dict, backend_id: str, stage: str, attempt: i
         "tokens_estimated": res.tokens_estimated,
         "cost_usd_list": ctx.config.cost_usd(backend_id, res.prompt_tokens, res.completion_tokens),
         "cache_hit": hit,
+        "finish_reason": res.finish_reason,
+        "reasoning_tokens": res.reasoning_tokens,
         "output_hash": sha256_text(res.text),
         "prompt_hash": sha256_text(prompt),
         "verify": None,
@@ -143,7 +145,7 @@ def run_task(ctx: RunContext, task: dict) -> TaskOutcome:
     b = ctx.policy.route("diagnose", state)
     if b:
         res, rec = _call(ctx, common, b, "diagnose", 1, stages.diagnose_prompt(code0, test_output, max_out),
-                         cfg.max_tokens("diagnose"))
+                         cfg.max_tokens("diagnose", b))
         calls += 1
         used.append(b)
         diagnosis = res.text.strip() or None
@@ -158,7 +160,7 @@ def run_task(ctx: RunContext, task: dict) -> TaskOutcome:
         if calls >= max_calls:
             raise TooManyCalls(f"{task['task_id']}: policy {ctx.policy.id} asked for call {calls + 1} > {max_calls}")
         prompt = stages.patch_prompt(code0, test_output, diagnosis, previous, max_out, max_diag)
-        res, rec = _call(ctx, common, b, "patch", state.attempt, prompt, cfg.max_tokens("patch"))
+        res, rec = _call(ctx, common, b, "patch", state.attempt, prompt, cfg.max_tokens("patch", b))
         calls += 1
         used.append(b)
         code = stages.extract_code(res.text, entry)

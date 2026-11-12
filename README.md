@@ -16,6 +16,20 @@ those traces.
 > costs nothing, so cost is reported as the **list-price equivalent**: tokens
 > used times each model's published price.
 
+### Backends
+
+| Backend | Model | Notes |
+|---|---|---|
+| local-small | a 3B to 8B instruct GGUF on llama.cpp (default label `qwen2.5-coder-7b-instruct-q4_k_m`) | cheapest first attempt, $0 list price |
+| groq-small | `openai/gpt-oss-20b` | reasoning model, `reasoning_effort: low` |
+| groq-large | `openai/gpt-oss-120b` | reasoning model, `reasoning_effort: low` |
+
+Both Groq models are reasoning models: their hidden reasoning is billed as
+completion tokens and counts against `max_tokens`, so they get larger
+per-backend budgets in `config.yaml`, and every trace line records
+`finish_reason` and `reasoning_tokens`. A reply cut off mid-reasoning shows up
+in the failure gallery as "hit max_tokens", not as a wrong fix.
+
 ## Status
 
 The whole pipeline is built and tested. **No real experiment has been run

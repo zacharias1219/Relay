@@ -176,6 +176,7 @@ class OpenAICompatBackend(Backend):
         ttft_ms: float | None = None
         parts: list[str] = []
         usage: dict[str, Any] | None = None
+        finish: str | None = None
         for raw in resp.iter_lines(decode_unicode=True):
             if not raw or not raw.startswith("data:"):
                 continue
@@ -196,6 +197,8 @@ class OpenAICompatBackend(Backend):
                     ttft_ms = (time.perf_counter() - t0) * 1000.0
                 if piece:
                     parts.append(piece)
+                if choice.get("finish_reason"):
+                    finish = choice["finish_reason"]
             u = chunk.get("usage") or (chunk.get("x_groq") or {}).get("usage")
             if u:
                 usage = u
@@ -205,7 +208,12 @@ class OpenAICompatBackend(Backend):
             pt, ct, est = int(usage["prompt_tokens"]), int(usage.get("completion_tokens") or 0), False
         else:
             pt, ct, est = estimate_tokens(prompt), estimate_tokens(text), True
-        return GenResult(text, pt, ct, ttft_ms, total_ms, est), headers
+        rt = None
+        if usage:
+            details = usage.get("completion_tokens_details") or {}
+            rt = details.get("reasoning_tokens", usage.get("reasoning_tokens"))
+        return GenResult(text, pt, ct, ttft_ms, total_ms, est, finish_reason=finish,
+                         reasoning_tokens=None if rt is None else int(rt)), headers
 
     def list_models(self) -> list[str]:
         r = self.session.get(f"{self.base_url}/models", headers=self._headers(), timeout=30)
@@ -297,7 +305,10 @@ class SimBackend(Backend):
                     code = code.rstrip() + "\n"
             text = "```python\n" + code.strip("\n") + "\n```"
         pt = estimate_tokens(prompt)
-        ct = min(max_tokens, estimate_tokens(text))
+        rt = None
+        if self.sim.get("reasoning_tokens"):  # mimic a reasoning model: hidden tokens, billed as output
+            rt = int(float(self.sim["reasoning_tokens"]) * (0.5 + _u01("rt", self.backend_id, ph)))
+        ct = min(max_tokens, estimate_tokens(text) + (rt or 0))
         ttft = float(self.sim.get("ttft_ms", 300)) * (0.7 + 0.6 * _u01("ttft", self.backend_id, ph))
         tps = float(self.sim.get("tokens_per_s", 100)) * (0.8 + 0.4 * _u01("tps", self.backend_id, ph))
         total = ttft + ct / tps * 1000.0
@@ -305,7 +316,8 @@ class SimBackend(Backend):
         qcfg = self.sim.get("queue_ms")
         if qcfg and _u01("queue", self.backend_id, ph) < float(qcfg.get("p", 0)):
             q = float(qcfg.get("ms", 0)) * (0.5 + _u01("qms", ph))
-        return CallOutcome(GenResult(text, pt, ct, round(ttft, 1), round(total, 1), True), round(q, 1))
+        return CallOutcome(GenResult(text, pt, ct, round(ttft, 1), round(total, 1), True, finish_reason="stop",
+                                     reasoning_tokens=rt), round(q, 1))
 
 
 def build_backends(config, temperature: float, tasks: dict[str, dict] | None = None, limiters=None) -> dict[str, Backend]:

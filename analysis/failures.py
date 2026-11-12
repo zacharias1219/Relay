@@ -13,11 +13,14 @@ from analysis.data import Run, TaskRow
 _EXC = re.compile(r"^([A-Za-z_][A-Za-z0-9_]*(?:Error|Exception|Exit|Interrupt))\b", re.MULTILINE)
 
 
-def classify(verify: dict | None) -> tuple[str, str]:
-    """(code, plain-language likely reason) for a failed verify."""
+def classify(verify: dict | None, call: dict | None = None) -> tuple[str, str]:
+    """(code, plain-language likely reason) for a failed verify (and the call that produced it)."""
     if not verify:
         return "no_patch", "no patch was attempted"
     st = verify.get("status")
+    if call and call.get("finish_reason") == "length" and st in ("no_code", "error"):
+        return "truncated", ("the reply hit max_tokens before the code was finished"
+                             + (" (reasoning used most of the budget)" if call.get("reasoning_tokens") else ""))
     if st == "no_code":
         return "no_code", "the reply had no Python code block (format failure or truncated output)"
     if st == "timeout":
@@ -62,7 +65,7 @@ def gallery(primary: dict[str, Run], tasks_meta: dict[str, dict], baseline: str,
     reasons_override = annotations["failure_reasons"]
 
     def reason_for(tid: str, row: TaskRow) -> dict:
-        code, text = classify(row.final_verify)
+        code, text = classify(row.final_verify, row.patch_calls[-1] if row.patch_calls else None)
         if tid in reasons_override:
             text = str(reasons_override[tid])
             code = "annotated"

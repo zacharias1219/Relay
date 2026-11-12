@@ -85,3 +85,26 @@ def test_offline_guard(monkeypatch):
     monkeypatch.setenv("RELAY_OFFLINE", "1")
     with pytest.raises(OfflineError):
         OpenAICompatBackend("groq-small", CFG).generate("p", 8)
+
+
+def test_finish_reason_and_reasoning_tokens():
+    lines = sse(
+        {"choices": [{"delta": {"reasoning": "think..."}}]},
+        {"choices": [{"delta": {"content": "```python\nx"}, "finish_reason": "length"}]},
+        {"choices": [], "usage": {"prompt_tokens": 9, "completion_tokens": 100,
+                                  "completion_tokens_details": {"reasoning_tokens": 90}}},
+    )
+    out = OpenAICompatBackend("groq-large", CFG, session=Session([Resp(200, lines)])).generate("p", 100)
+    r = out.result
+    assert r.finish_reason == "length" and r.reasoning_tokens == 90 and r.completion_tokens == 100
+    assert r.text == "```python\nx"  # reasoning is timed (TTFT) but never part of the answer
+    assert r.ttft_ms is not None
+
+
+def test_extra_params_reach_the_request_and_cache_key():
+    cfg = {**CFG, "extra_params": {"reasoning_effort": "low"}}
+    s = Session([OK])
+    b = OpenAICompatBackend("groq-large", cfg, session=s)
+    b.generate("p", 8)
+    assert s.bodies[0]["reasoning_effort"] == "low"
+    assert b.params(8)["extra"] == {"reasoning_effort": "low"}

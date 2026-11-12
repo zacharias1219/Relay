@@ -1,0 +1,27 @@
+{
+ "key": "14efdb7844c305910801a31c19afa4ceb2f8afd2dd1040b10d8e65a7ed4df48a",
+ "created_at": "2026-11-12T09:36:53.049+00:00",
+ "request": {
+  "backend": "groq-large",
+  "model_id": "sim-gpt-oss-120b",
+  "params": {
+   "max_tokens": 3072,
+   "temperature": 0.0,
+   "extra": {
+    "reasoning_effort": "low"
+   }
+  },
+  "prompt": "Fix the bug in this Python function.\n\nCode:\n```python\ndef starts_one_ends(n):\n    if n == 1: return 1\n    return 18 * n * (10 ** (n - 2))\n```\n\nTest output:\n```\nTraceback (most recent call last):\n  File \"solution.py\", line 29, in <module>\n    check(starts_one_ends)\n    ~~~~~^^^^^^^^^^^^^^^^^\n  File \"solution.py\", line 21, in check\n    assert starts_one_ends(2) == 18\n           ^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n```\n\nDiagnosis: The bug in `starts_one_ends` seems to be excess logic, which produces incorrect output (sim-gpt-oss-20b).\n\nReturn the complete corrected function, with any imports it needs, in a single ```python code block. No explanation."
+ },
+ "response": {
+  "text": "```python\ndef starts_one_ends(n):\n    if n == 1: return 1\n    return 18 * (10 ** (n - 2))\n```",
+  "prompt_tokens": 164,
+  "completion_tokens": 386,
+  "ttft_ms": 253.0,
+  "total_ms": 1640.7,
+  "tokens_estimated": true,
+  "queue_wait_ms": 0.0,
+  "finish_reason": "stop",
+  "reasoning_tokens": 363
+ }
+}

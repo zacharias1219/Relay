@@ -1,0 +1,27 @@
+{
+ "key": "2a84566db313503b72b56c7e583a0a886f074a3caf205f5bf9a068591f7cc054",
+ "created_at": "2026-11-12T09:36:43.731+00:00",
+ "request": {
+  "backend": "groq-large",
+  "model_id": "sim-gpt-oss-120b",
+  "params": {
+   "max_tokens": 1024,
+   "temperature": 0.0,
+   "extra": {
+    "reasoning_effort": "low"
+   }
+  },
+  "prompt": "A Python function fails its tests.\n\nCode:\n```python\nfrom typing import List\n\n\ndef filter_by_prefix(strings: List[str], prefix: str) -> List[str]:\n    return [x for x in strings if x.endswith(prefix)]\n```\n\nTest output:\n```\nTraceback (most recent call last):\n  File \"solution.py\", line 27, in <module>\n    check(filter_by_prefix)\n    ~~~~~^^^^^^^^^^^^^^^^^^\n  File \"solution.py\", line 25, in check\n    assert filter_by_prefix(['xxx', 'asd', 'xxy', 'john doe', 'xxxAAA', 'xxx'], 'xxx') == ['xxx', 'xxxAAA', 'xxx']\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n```\n\nIn at most three sentences, state the root cause of the bug. Do not write code."
+ },
+ "response": {
+  "text": "The bug in `filter_by_prefix` is probably function misuse, which produces incorrect output (sim-gpt-oss-120b).",
+  "prompt_tokens": 181,
+  "completion_tokens": 183,
+  "ttft_ms": 205.3,
+  "total_ms": 1048.6,
+  "tokens_estimated": true,
+  "queue_wait_ms": 0.0,
+  "finish_reason": "stop",
+  "reasoning_tokens": 156
+ }
+}

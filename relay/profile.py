@@ -59,7 +59,8 @@ def run_profile(config: Config, backend_ids: list[str] | None = None, n: int = 2
     for bid in ids:
         b = backends[bid]
         for i, prompt in enumerate(PROFILE_PROMPTS[:n]):
-            out = b.generate(prompt, MAX_TOKENS)
+            out = b.generate(prompt, config.max_tokens("profile", bid) if
+                             (config.backend(bid).get("max_tokens") or {}).get("profile") else MAX_TOKENS)
             r = out.result
             writer.write({
                 "record": "profile", "run_id": run_id, "prompt_id": f"p{i:02d}",
@@ -67,6 +68,7 @@ def run_profile(config: Config, backend_ids: list[str] | None = None, n: int = 2
                 "ttft_ms": None if r.ttft_ms is None else round(r.ttft_ms, 1),
                 "total_ms": round(r.total_ms, 1), "prompt_tokens": r.prompt_tokens,
                 "completion_tokens": r.completion_tokens, "tokens_estimated": r.tokens_estimated,
+                "finish_reason": r.finish_reason, "reasoning_tokens": r.reasoning_tokens,
                 "queue_wait_ms": round(out.queue_wait_ms, 1),
             })
             print(f"  {bid:<12} p{i:02d} ttft={r.ttft_ms or 0:7.1f}ms total={r.total_ms:8.1f}ms "

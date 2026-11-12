@@ -30,6 +30,8 @@ class GenResult:
     total_ms: float
     tokens_estimated: bool = False
     queue_wait_ms: float = 0.0  # time spent in our own rate limiter / retry-after
+    finish_reason: str | None = None  # "stop", or "length" when max_tokens cut the reply off
+    reasoning_tokens: int | None = None  # part of completion_tokens spent reasoning, when reported
 
     def to_dict(self) -> dict[str, Any]:
         return asdict(self)
@@ -44,6 +46,8 @@ class GenResult:
             total_ms=float(d["total_ms"]),
             tokens_estimated=bool(d.get("tokens_estimated", False)),
             queue_wait_ms=float(d.get("queue_wait_ms", 0.0)),
+            finish_reason=d.get("finish_reason"),
+            reasoning_tokens=d.get("reasoning_tokens"),
         )
 
 

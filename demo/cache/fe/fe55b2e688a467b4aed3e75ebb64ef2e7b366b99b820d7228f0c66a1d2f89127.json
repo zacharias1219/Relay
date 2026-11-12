@@ -1,6 +1,6 @@
 {
  "key": "fe55b2e688a467b4aed3e75ebb64ef2e7b366b99b820d7228f0c66a1d2f89127",
- "created_at": "2026-11-12T09:31:25.351+00:00",
+ "created_at": "2026-11-12T09:36:57.022+00:00",
  "request": {
   "backend": "local-small",
   "model_id": "sim-local-7b",
@@ -17,6 +17,8 @@
   "ttft_ms": 1120.5,
   "total_ms": 6595.8,
   "tokens_estimated": true,
-  "queue_wait_ms": 0.0
+  "queue_wait_ms": 0.0,
+  "finish_reason": "stop",
+  "reasoning_tokens": null
  }
 }

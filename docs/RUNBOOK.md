@@ -27,7 +27,11 @@ llama-server -m qwen2.5-coder-7b-instruct-q4_k_m.gguf --port 8080 -c 8192
 Then edit `config.yaml`:
 
 - `backends.local-small.model_id` and `quantization` to match the GGUF you loaded
-- `backends.groq-*.model_id` to ids your account lists (`make models`)
+- `backends.groq-*.model_id` to ids your account lists (`make models`); the
+  defaults are `openai/gpt-oss-20b` and `openai/gpt-oss-120b`
+- `extra_params.reasoning_effort` (low by default) and the per-backend
+  `max_tokens`; if `results/tables/failures.md` shows "hit max_tokens"
+  failures, raise `max_tokens.patch` for that backend
 - `price_per_mtok` from groq.com/pricing, and `limits` from your console limits page
 - `hardware.laptop_model` and `hardware.llama_cpp_build`
 
@@ -81,7 +85,9 @@ runner stops cleanly and prints the resume command; run it again the next day.
 make run-all
 ```
 
-Rough budget: 3,000 to 4,000 tokens per task means a 200,000-token daily
+Rough budget: the GPT-OSS models spend extra completion tokens on reasoning,
+so expect more than the spec's 3,000 to 4,000 tokens per task; check the first
+day's usage in `state/usage-<date>.json` and adjust. At 4,000 tokens per task, a 200,000-token daily
 limit covers about 50 task runs per model per day. Because limits are per
 model, P1 and P3 mostly draw on the small model's budget and P0/P2 on the
 large model's, so the policies can share a day.

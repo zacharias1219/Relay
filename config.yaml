@@ -44,29 +44,37 @@ backends:
     quantization: Q4_K_M
     price_per_mtok: { input: 0.0, output: 0.0 }
     timeout_s: 300
+  # Groq's current free-tier models are the two GPT-OSS reasoning models.
+  # Reasoning tokens are billed as completion tokens AND count against
+  # max_tokens, so these backends get bigger budgets than the local model;
+  # a reply cut off mid-reasoning is traced with finish_reason "length".
+  # reasoning_effort: low keeps tokens (and the daily budget) down; it is
+  # part of the cache key, so changing it means fresh calls.
   groq-small:
     kind: groq
     role: fast, cheap
     runs_on: Groq
     base_url: https://api.groq.com/openai/v1
-    model_id: llama-3.1-8b-instant
+    model_id: openai/gpt-oss-20b
+    extra_params: { reasoning_effort: low }
+    max_tokens: { diagnose: 1024, patch: 3072, profile: 1024 }
     # USD per million tokens, list price. Check https://groq.com/pricing
     # before the first run and update; cost is reported as list-price
     # equivalent because free-tier usage is free.
-    price_per_mtok: { input: 0.05, output: 0.08 }
-    limits: { rpm: 30, rpd: 14400, tpm: 6000, tpd: 500000 }
-    timeout_s: 120
+    price_per_mtok: { input: 0.075, output: 0.30 }
+    limits: { rpm: 30, rpd: 1000, tpm: 8000, tpd: 200000 }
+    timeout_s: 180
   groq-large:
     kind: groq
     role: strongest available
     runs_on: Groq
     base_url: https://api.groq.com/openai/v1
-    model_id: llama-3.3-70b-versatile
-    # Alternative 120B-class option: openai/gpt-oss-120b (a reasoning model;
-    # add extra_params: { reasoning_effort: low } and raise max_tokens.patch).
-    price_per_mtok: { input: 0.59, output: 0.79 }
-    limits: { rpm: 30, rpd: 1000, tpm: 12000, tpd: 100000 }
-    timeout_s: 120
+    model_id: openai/gpt-oss-120b
+    extra_params: { reasoning_effort: low }
+    max_tokens: { diagnose: 1024, patch: 3072, profile: 1024 }
+    price_per_mtok: { input: 0.15, output: 0.60 }
+    limits: { rpm: 30, rpd: 1000, tpm: 8000, tpd: 200000 }
+    timeout_s: 180
 
 # The limits above are placeholders shaped like Groq's published free-tier
 # sample (30 RPM, 1,000 RPD, 8,000 TPM, 200,000 TPD for text models). Your

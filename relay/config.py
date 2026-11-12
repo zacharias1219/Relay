@@ -83,7 +83,13 @@ class Config:
         pin, pout = self.price(backend_id)
         return round((prompt_tokens * pin + completion_tokens * pout) / 1e6, 10)
 
-    def max_tokens(self, stage: str) -> int:
+    def max_tokens(self, stage: str, backend_id: str | None = None) -> int:
+        """Token budget for a stage; a backend may override it (reasoning models need more,
+        because their hidden reasoning counts against max_tokens)."""
+        if backend_id:
+            over = (self.backend(backend_id).get("max_tokens") or {}).get(stage)
+            if over is not None:
+                return int(over)
         return int(self.raw["generation"]["max_tokens"][stage])
 
     @property

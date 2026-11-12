@@ -1,0 +1,27 @@
+{
+ "key": "0a1f63fe1c902cc43ad5c201f3c1421b7876e6aae47cf26a947b5e8aee9483a6",
+ "created_at": "2026-11-12T09:36:53.125+00:00",
+ "request": {
+  "backend": "groq-large",
+  "model_id": "sim-gpt-oss-120b",
+  "params": {
+   "max_tokens": 3072,
+   "temperature": 0.0,
+   "extra": {
+    "reasoning_effort": "low"
+   }
+  },
+  "prompt": "Fix the bug in this Python function.\n\nCode:\n```python\ndef get_row(lst, x):\n    coords = [(j, i) for i in range(len(lst)) for j in range(len(lst[i])) if lst[i][j] == x]\n    return sorted(sorted(coords, key=lambda x: x[1], reverse=True), key=lambda x: x[0])\n```\n\nTest output:\n```\nTraceback (most recent call last):\n  File \"solution.py\", line 48, in <module>\n    check(get_row)\n    ~~~~~^^^^^^^^^\n  File \"solution.py\", line 19, in check\n    assert get_row([\n           ^^^^^^^^^\n    ...<3 lines>...\n    ], 1) == [(0, 0), (1, 4), (1, 0), (2, 5), (2, 0)]\n    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n```\n\nDiagnosis: The bug in `get_row` looks like variable misuse, which produces incorrect output (sim-gpt-oss-20b).\n\nReturn the complete corrected function, with any imports it needs, in a single ```python code block. No explanation."
+ },
+ "response": {
+  "text": "```python\ndef get_row(lst, x):\n    coords = [(i, j) for i in range(len(lst)) for j in range(len(lst[i])) if lst[i][j] == x]\n    return sorted(sorted(coords, key=lambda x: x[1], reverse=True), key=lambda x: x[0])\n```",
+  "prompt_tokens": 213,
+  "completion_tokens": 300,
+  "ttft_ms": 290.6,
+  "total_ms": 1723.1,
+  "tokens_estimated": true,
+  "queue_wait_ms": 2680.8,
+  "finish_reason": "stop",
+  "reasoning_tokens": 247
+ }
+}

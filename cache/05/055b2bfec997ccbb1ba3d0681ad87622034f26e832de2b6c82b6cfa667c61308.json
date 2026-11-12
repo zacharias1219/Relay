@@ -1,0 +1,27 @@
+{
+ "key": "055b2bfec997ccbb1ba3d0681ad87622034f26e832de2b6c82b6cfa667c61308",
+ "created_at": "2026-11-12T10:14:45.488+00:00",
+ "request": {
+  "backend": "groq-large",
+  "model_id": "openai/gpt-oss-120b",
+  "params": {
+   "max_tokens": 3072,
+   "temperature": 0.0,
+   "extra": {
+    "reasoning_effort": "low"
+   }
+  },
+  "prompt": "Fix the bug in this Python function.\n\nCode:\n```python\ndef get_row(lst, x):\n    coords = [(j, i) for i in range(len(lst)) for j in range(len(lst[i])) if lst[i][j] == x]\n    return sorted(sorted(coords, key=lambda x: x[1], reverse=True), key=lambda x: x[0])\n```\n\nTest output:\n```\nTraceback (most recent call last):\n  File \"solution.py\", line 48, in <module>\n    check(get_row)\n    ~~~~~^^^^^^^^^\n  File \"solution.py\", line 19, in check\n    assert get_row([\n           ^^^^^^^^^\n    ...<3 lines>...\n    ], 1) == [(0, 0), (1, 4), (1, 0), (2, 5), (2, 0)]\n    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n```\n\nDiagnosis: The function sorts the coordinates in the wrong order: it first orders by column descending and then by row ascending, whereas the expected result requires sorting by row ascending and, within each row, by column descending. This reversed sorting logic causes the returned list to be out of order.\n\nA previous fix was tried and still fails.\nPrevious fix:\n```python\ndef get_row(lst, x):\n    coords = [(j, i) for i in range(len(lst)) for j in range(len(lst[i])) if lst[i][j] == x]\n    return sorted(coords, key=lambda p: (p[1], -p[0]))\n```\nIts test output:\n```\nTraceback (most recent call last):\n  File \"solution.py\", line 48, in <module>\n    check(get_row)\n    ~~~~~^^^^^^^^^\n  File \"solution.py\", line 19, in check\n    assert get_row([\n           ^^^^^^^^^\n    ...<3 lines>...\n    ], 1) == [(0, 0), (1, 4), (1, 0), (2, 5), (2, 0)]\n    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n```\n\nReturn the complete corrected function, with any imports it needs, in a single ```python code block. No explanation."
+ },
+ "response": {
+  "text": "```python\ndef get_row(lst, x):\n    coords = [(j, i) for i, row in enumerate(lst) for j, val in enumerate(row) if val == x]\n    return sorted(coords, key=lambda p: (p[1], -p[0]))\n```",
+  "prompt_tokens": 540,
+  "completion_tokens": 191,
+  "ttft_ms": 380.2873399999953,
+  "total_ms": 789.1829499999403,
+  "tokens_estimated": false,
+  "queue_wait_ms": 5284.6,
+  "finish_reason": "stop",
+  "reasoning_tokens": 123
+ }
+}

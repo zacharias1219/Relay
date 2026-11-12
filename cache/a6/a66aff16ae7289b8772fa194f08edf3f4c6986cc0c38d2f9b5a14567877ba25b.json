@@ -1,0 +1,27 @@
+{
+ "key": "a66aff16ae7289b8772fa194f08edf3f4c6986cc0c38d2f9b5a14567877ba25b",
+ "created_at": "2026-11-12T10:14:35.388+00:00",
+ "request": {
+  "backend": "groq-large",
+  "model_id": "openai/gpt-oss-120b",
+  "params": {
+   "max_tokens": 3072,
+   "temperature": 0.0,
+   "extra": {
+    "reasoning_effort": "low"
+   }
+  },
+  "prompt": "Fix the bug in this Python function.\n\nCode:\n```python\ndef starts_one_ends(n):\n    if n == 1: return 1\n    return 18 * n * (10 ** (n - 2))\n```\n\nTest output:\n```\nTraceback (most recent call last):\n  File \"solution.py\", line 29, in <module>\n    check(starts_one_ends)\n    ~~~~~^^^^^^^^^^^^^^^^^\n  File \"solution.py\", line 21, in check\n    assert starts_one_ends(2) == 18\n           ^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n```\n\nDiagnosis: The function multiplies by `n`, so for `n = 2` it returns `36` instead of the expected `18`. The correct formula should not include the extra `n` factor; it should be `18 * 10 ** (n - 2)` (with a special case for `n = 1`).\n\nReturn the complete corrected function, with any imports it needs, in a single ```python code block. No explanation."
+ },
+ "response": {
+  "text": "```python\ndef starts_one_ends(n):\n    if n == 1:\n        return 1\n    return 18 * (10 ** (n - 2))\n```",
+  "prompt_tokens": 295,
+  "completion_tokens": 53,
+  "ttft_ms": 274.8285920001763,
+  "total_ms": 379.1811979999693,
+  "tokens_estimated": false,
+  "queue_wait_ms": 2167.2,
+  "finish_reason": "stop",
+  "reasoning_tokens": 7
+ }
+}

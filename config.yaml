@@ -42,6 +42,8 @@ backends:
     # quantization in the label so it lands in every trace and cache key.
     model_id: qwen2.5-coder-7b-instruct-q4_k_m
     quantization: Q4_K_M
+    # Qwen/Qwen2.5-Coder-7B-Instruct-GGUF (Apache-2.0), file sha256:
+    gguf_sha256: 509287f78cb4d4cf6b3843734733b914b2c158e43e22a7f4bf5e963800894d3c
     price_per_mtok: { input: 0.0, output: 0.0 }
     timeout_s: 300
   # Groq's current free-tier models are the two GPT-OSS reasoning models.
@@ -115,5 +117,7 @@ analysis:
 # Fill these in by hand before publishing. Auto-detected CPU/RAM/OS and the
 # llama.cpp build are recorded in each run's run_meta trace line.
 hardware:
-  laptop_model: "<your laptop model>"
-  llama_cpp_build: "<git tag or build number, e.g. b4500>"
+  # The first live runs used no laptop: "local" ran on the Claude Code cloud
+  # container's CPU (4 vCPU, no GPU). Replace these if you rerun P3 on a laptop.
+  laptop_model: "none: cloud container, 4 vCPU Intel Xeon @ 2.10GHz, 15.7 GB RAM, CPU only"
+  llama_cpp_build: "llama-cpp-python (version recorded after build)"

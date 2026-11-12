@@ -120,4 +120,4 @@ hardware:
   # The first live runs used no laptop: "local" ran on the Claude Code cloud
   # container's CPU (4 vCPU, no GPU). Replace these if you rerun P3 on a laptop.
   laptop_model: "none: cloud container, 4 vCPU Intel Xeon @ 2.10GHz, 15.7 GB RAM, CPU only"
-  llama_cpp_build: "llama-cpp-python (version recorded after build)"
+  llama_cpp_build: "llama-cpp-python 0.3.36 (vendored llama.cpp), built with GGML_NATIVE=ON"

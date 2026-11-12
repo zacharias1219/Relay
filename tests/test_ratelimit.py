@@ -65,3 +65,36 @@ def test_429_penalty_counts_as_queue_wait():
 @pytest.mark.parametrize("s,v", [("7.66s", 7.66), ("2m59.56s", 179.56), ("1h2m3s", 3723), ("120ms", 0.12), ("3", 3.0)])
 def test_parse_duration(s, v):
     assert parse_duration(s) == pytest.approx(v)
+
+
+def test_usage_model_cold_start_then_learns(tmp_path):
+    from relay.ratelimit import UsageModel
+
+    um = UsageModel(tmp_path, quantile=0.9, margin=1.25, min_observations=3)
+    assert um.reservation("m", 100, 3072) == 100 + 128 + 3072  # cold: full budget
+    for ct in (300, 320, 400):
+        um.observe("m", 100, 3072, prompt_tokens=170, completion_tokens=ct)
+    r = um.reservation("m", 100, 3072)
+    assert r == 100 + 70 + int(400 * 1.25) + 1  # learned overhead + p90 completion x margin
+    assert r < 1000
+    # budgets are learned separately per max_tokens (stage), and persist across processes
+    assert UsageModel(tmp_path).reservation("m", 100, 1024) == 100 + 128 + 1024
+    assert UsageModel(tmp_path).reservation("m", 100, 3072) == r
+
+
+def test_usage_model_never_exceeds_max_tokens(tmp_path):
+    from relay.ratelimit import UsageModel
+
+    um = UsageModel(None, min_observations=1)
+    um.observe("m", 10, 200, 10, 200)
+    assert um.reservation("m", 10, 200) == 10 + 0 + 200
+
+
+def test_limiter_uses_learned_reservation():
+    from relay.ratelimit import UsageModel
+
+    lim = ModelLimiter("m", tpm=6000, usage_model=UsageModel(None, min_observations=1))
+    assert lim.reservation(100, 3072) == 100 + 128 + 3072
+    lim.learn(100, 3072, 160, 250)
+    assert lim.reservation(100, 3072) == 100 + 60 + int(250 * 1.25) + 1
+    assert ModelLimiter("m", tpm=6000).reservation(100, 3072) == 3172  # no model: old rule

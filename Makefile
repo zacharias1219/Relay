@@ -5,7 +5,7 @@ DEMO   := config.demo.yaml
 RELAY  := $(PY) -m relay --config $(CONFIG)
 PORT   ?= 8000
 
-.PHONY: help setup test data models smoke profile verify-sandbox run-all \
+.PHONY: help setup test data models smoke profile verify-sandbox run-all limiter-sim \
         analyze check-page repro demo demo-repro serve clean-demo
 
 help:            ## list targets
@@ -37,6 +37,9 @@ run-%:           ## run or resume one policy over the 40 tasks, e.g. make run-P3
 
 run-all:         ## run every policy (resumable; stops cleanly at the daily budget)
 	$(RELAY) run --policy all
+
+limiter-sim:     ## replay recorded Groq calls through both rate-limiter reservation rules
+	$(PY) -m analysis.limiter_sim --config $(CONFIG)
 
 analyze:         ## rebuild results.json, tables and figures from traces (no API calls)
 	$(PY) -m analysis.build --config $(CONFIG)

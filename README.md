@@ -106,7 +106,8 @@ relay/
   stages.py       diagnose, patch, verify, retry; prompts; code extraction
   policies.py     P0 to P3
   sandbox.py      test runner: fresh process, temp dir, timeout, rlimits, no network (or Docker)
-  ratelimit.py    token buckets per model (RPM, TPM) + persisted daily ledger (RPD, TPD), 429 retry-after
+  ratelimit.py    token buckets per model (RPM, TPM), reservations learned from observed usage,
+                  persisted daily ledger (RPD, TPD), 429 retry-after
   cache.py        response cache keyed by sha256(model id, prompt, params); --replay mode
   trace.py        JSONL writer and schema
   runner.py       runs tasks under a policy; resumable across days

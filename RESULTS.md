@@ -67,13 +67,29 @@ Profile (M1, 20 fixed prompts): time to first token 318 ms (120B), 348 ms
 1. **"Local" is a cloud CPU, not a laptop.** P3's latency would be very
    different on a laptop with Apple silicon or a GPU. Its cost and pass-rate
    results do not depend on where the local model runs.
-2. **Wall clock is dominated by our own rate limiter.** Groq calls waited
-   294 s (P0), 223 s (P1) and 143 s (P2) in total in Relay's token bucket,
-   against 57-70 s of model time. The limiter reserves prompt tokens plus the
-   full 3,072-token patch budget before each call, which is very conservative
-   for reasoning models that typically use a few hundred. Queue wait is logged
-   apart from latency exactly so this does not get blamed on the models.
-   Improvement: reserve tokens from observed usage, not from max_tokens.
+2. **Wall clock is dominated by the free tier's tokens-per-minute limit.**
+   Groq calls waited 294 s (P0), 223 s (P1) and 143 s (P2) in total in
+   Relay's token bucket, against 57-70 s of model time. Queue wait is logged
+   apart from latency so it is never blamed on the models.
+
+   This run reserved prompt + max_tokens (3,072 for a patch) before each call.
+   That rule has since been replaced by reserving from observed usage
+   (`ratelimit.reserve` in config.yaml). Replaying the recorded calls through
+   both rules on a simulated clock (`make limiter-sim`) shows the old rule was
+   not the main cost, because unused reservations were already refunded after
+   each call:
+
+   | Run | Recorded wait | Simulated, old rule | Simulated, observed usage | Observed usage, no 15% safety margin |
+   |---|---|---|---|---|
+   | P0 | 293.8 s | 285.3 s | 262.6 s | 203.3 s |
+   | P1 | 222.9 s | 257.1 s | 233.6 s | 180.6 s |
+   | P2 | 142.7 s | 118.5 s | 94.6 s | 62.5 s |
+
+   The new rule saves about 23 s per run. Most of the wait is the limit
+   itself: these calls averaged about 450-490 tokens each (on P0, 47% of
+   completion tokens were hidden reasoning), and 8,000 tokens a minute at an
+   85% safety margin allows about 113 tokens a second. Running at 100% of the
+   limit would save more, at the price of more 429s.
 3. **Local token counts are estimates.** The llama-cpp-python server does not
    report usage while streaming; those trace lines carry
    `tokens_estimated: true`. Local list-price cost is $0 either way.

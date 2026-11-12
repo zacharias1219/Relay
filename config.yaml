@@ -84,6 +84,13 @@ backends:
 # copy your numbers in. The limiter runs at `safety` x these values.
 ratelimit:
   safety: 0.85
+  # What to reserve from the per-minute token bucket before each call.
+  # observed: prompt + learned overhead + the 90th-percentile completion size
+  #   seen for this model and max_tokens (x margin), capped at max_tokens;
+  #   full max_tokens until min_observations calls have been seen. Learned
+  #   sizes persist in state/usage-model.json across runs.
+  # max_tokens: the old, very conservative prompt + max_tokens.
+  reserve: { mode: observed, quantile: 0.9, margin: 1.25, min_observations: 3, window: 50 }
   max_retries: 6            # on 429 / 5xx, after honouring retry-after
   backoff_s: 2.0
 

@@ -125,7 +125,8 @@ class OpenAICompatBackend(Backend):
         return body
 
     def generate(self, prompt: str, max_tokens: int) -> CallOutcome:
-        est = estimate_tokens(prompt) + max_tokens
+        prompt_est = estimate_tokens(prompt)
+        est = self.limiter.reservation(prompt_est, max_tokens) if self.limiter else prompt_est + max_tokens
         queue_ms = 0.0
         attempt = 0
         while True:
@@ -150,6 +151,8 @@ class OpenAICompatBackend(Backend):
             if self.limiter:
                 self.limiter.settle(est, result.prompt_tokens + result.completion_tokens)
                 self.limiter.observe_headers(headers)
+                if not result.tokens_estimated:
+                    self.limiter.learn(prompt_est, max_tokens, result.prompt_tokens, result.completion_tokens)
             return CallOutcome(result, queue_ms)
 
     def _stream_once(self, prompt: str, max_tokens: int) -> tuple[GenResult, dict[str, str]]:

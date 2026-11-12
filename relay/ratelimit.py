@@ -91,6 +91,66 @@ class UsageLedger:
             os.replace(tmp, f)
 
 
+class UsageModel:
+    """Learns how many tokens calls really use, so the limiter reserves that, not max_tokens.
+
+    Reserving `prompt + max_tokens` before every call is safe but, for reasoning
+    models with large budgets, wildly pessimistic: a 3,072-token patch budget
+    typically uses a few hundred. This keeps a window of recent completion sizes
+    per (model, max_tokens) and of how far the chars/4 prompt estimate falls
+    short of the real prompt count (chat templates add tokens), and reserves a
+    high quantile of each plus a margin. Until it has `min_observations` it
+    reserves the full max_tokens. Any shortfall is repaid by `settle()` after the
+    call, and Groq's own 429 + retry-after remains the backstop.
+    """
+
+    def __init__(self, state_dir: str | os.PathLike | None = None, quantile: float = 0.9,
+                 margin: float = 1.25, min_observations: int = 3, window: int = 50,
+                 default_prompt_overhead: int = 128):
+        self.path = Path(state_dir) / "usage-model.json" if state_dir else None
+        self.quantile = quantile
+        self.margin = margin
+        self.min_obs = min_observations
+        self.window = window
+        self.default_overhead = default_prompt_overhead
+        self.data: dict[str, dict[str, list[int]]] = {}
+        if self.path and self.path.exists():
+            try:
+                self.data = json.loads(self.path.read_text())
+            except (ValueError, OSError):
+                self.data = {}
+
+    @staticmethod
+    def _key(model: str, max_tokens: int) -> str:
+        return f"{model}|{max_tokens}"
+
+    def _q(self, xs: list[int]) -> float:
+        s = sorted(xs)
+        i = min(len(s) - 1, max(0, int(round(self.quantile * (len(s) - 1)))))
+        return float(s[i])
+
+    def reservation(self, model: str, prompt_est: int, max_tokens: int) -> int:
+        d = self.data.get(self._key(model, max_tokens), {})
+        comp, over = d.get("completion", []), d.get("prompt_excess", [])
+        overhead = max(0.0, self._q(over)) if len(over) >= self.min_obs else self.default_overhead
+        if len(comp) < self.min_obs:
+            completion = max_tokens
+        else:
+            completion = min(max_tokens, int(self._q(comp) * self.margin) + 1)
+        return int(prompt_est + overhead + completion)
+
+    def observe(self, model: str, prompt_est: int, max_tokens: int, prompt_tokens: int,
+                completion_tokens: int) -> None:
+        d = self.data.setdefault(self._key(model, max_tokens), {"completion": [], "prompt_excess": []})
+        d["completion"] = (d["completion"] + [int(completion_tokens)])[-self.window:]
+        d["prompt_excess"] = (d["prompt_excess"] + [int(prompt_tokens) - int(prompt_est)])[-self.window:]
+        if self.path:
+            self.path.parent.mkdir(parents=True, exist_ok=True)
+            tmp = self.path.with_suffix(".tmp")
+            tmp.write_text(json.dumps(self.data))
+            os.replace(tmp, self.path)
+
+
 class ModelLimiter:
     def __init__(
         self,
@@ -103,8 +163,10 @@ class ModelLimiter:
         ledger: UsageLedger | None = None,
         clock: Callable[[], float] = time.monotonic,
         sleep: Callable[[float], None] = time.sleep,
+        usage_model: UsageModel | None = None,
     ):
         self.model = model
+        self.usage_model = usage_model
         self.clock = clock
         self.sleep = sleep
         self.ledger = ledger or UsageLedger(None)
@@ -124,6 +186,16 @@ class ModelLimiter:
             raise DailyBudgetExhausted(
                 f"{self.model}: daily token budget used ({used['tokens']} + ~{est_tokens} > {self.tpd:.0f} after safety margin)"
             )
+
+    def reservation(self, prompt_est: int, max_tokens: int) -> int:
+        """Tokens to reserve before a call: learned from usage, or prompt + max_tokens."""
+        if self.usage_model is None:
+            return prompt_est + max_tokens
+        return self.usage_model.reservation(self.model, prompt_est, max_tokens)
+
+    def learn(self, prompt_est: int, max_tokens: int, prompt_tokens: int, completion_tokens: int) -> None:
+        if self.usage_model is not None:
+            self.usage_model.observe(self.model, prompt_est, max_tokens, prompt_tokens, completion_tokens)
 
     def acquire(self, est_tokens: int) -> float:
         """Block until one request of ~est_tokens may go out. Returns ms waited."""
@@ -231,7 +303,16 @@ def parse_duration(s: str | None) -> float:
 
 
 def build_limiters(config, ledger: UsageLedger | None = None) -> dict[str, ModelLimiter]:
-    safety = float(config["ratelimit"].get("safety", 0.85))
+    rl = config["ratelimit"]
+    safety = float(rl.get("safety", 0.85))
+    res = rl.get("reserve") or {}
+    usage_model = None
+    if res.get("mode", "observed") == "observed":
+        state = ledger.state_dir if ledger is not None else None
+        usage_model = UsageModel(state, quantile=float(res.get("quantile", 0.9)),
+                                 margin=float(res.get("margin", 1.25)),
+                                 min_observations=int(res.get("min_observations", 3)),
+                                 window=int(res.get("window", 50)))
     out = {}
     for bid, b in config.backends.items():
         lim = b.get("limits")
@@ -245,5 +326,6 @@ def build_limiters(config, ledger: UsageLedger | None = None) -> dict[str, Model
             tpd=lim.get("tpd"),
             safety=safety,
             ledger=ledger,
+            usage_model=usage_model,
         )
     return out

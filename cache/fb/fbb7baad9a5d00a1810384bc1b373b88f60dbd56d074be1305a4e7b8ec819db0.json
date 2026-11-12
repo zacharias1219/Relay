@@ -1,0 +1,27 @@
+{
+ "key": "fbb7baad9a5d00a1810384bc1b373b88f60dbd56d074be1305a4e7b8ec819db0",
+ "created_at": "2026-11-12T10:04:04.602+00:00",
+ "request": {
+  "backend": "groq-small",
+  "model_id": "openai/gpt-oss-20b",
+  "params": {
+   "max_tokens": 1024,
+   "temperature": 0.0,
+   "extra": {
+    "reasoning_effort": "low"
+   }
+  },
+  "prompt": "A Python function fails its tests.\n\nCode:\n```python\ndef flip_case(string: str) -> str:\n    return string.lower()\n```\n\nTest output:\n```\nTraceback (most recent call last):\n  File \"solution.py\", line 25, in <module>\n    check(flip_case)\n    ~~~~~^^^^^^^^^^^\n  File \"solution.py\", line 22, in check\n    assert flip_case('Hello!') == 'hELLO!'\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n```\n\nIn at most three sentences, state the root cause of the bug. Do not write code."
+ },
+ "response": {
+  "text": "The function always converts the entire string to lowercase, ignoring the requirement to flip each characterâs case. It should toggle uppercase to lowercase and vice versa, not just lowercasing the whole string. This causes the test to fail when the input contains mixedâcase letters.",
+  "prompt_tokens": 199,
+  "completion_tokens": 69,
+  "ttft_ms": 284.08148599999095,
+  "total_ms": 432.7269420000448,
+  "tokens_estimated": false,
+  "queue_wait_ms": 0.0,
+  "finish_reason": "stop",
+  "reasoning_tokens": 6
+ }
+}

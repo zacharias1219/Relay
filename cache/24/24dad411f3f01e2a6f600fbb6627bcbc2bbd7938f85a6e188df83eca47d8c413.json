@@ -1,0 +1,27 @@
+{
+ "key": "24dad411f3f01e2a6f600fbb6627bcbc2bbd7938f85a6e188df83eca47d8c413",
+ "created_at": "2026-11-12T10:03:50.488+00:00",
+ "request": {
+  "backend": "groq-small",
+  "model_id": "openai/gpt-oss-20b",
+  "params": {
+   "max_tokens": 1024,
+   "temperature": 0.0,
+   "extra": {
+    "reasoning_effort": "low"
+   }
+  },
+  "prompt": "A Python function fails its tests.\n\nCode:\n```python\nfrom typing import List\n\n\ndef mean_absolute_deviation(numbers: List[float]) -> float:\n    mean = sum(numbers) / len(numbers)\n    return sum(abs(x - mean) for x in numbers) / mean\n```\n\nTest output:\n```\nTraceback (most recent call last):\n  File \"solution.py\", line 29, in <module>\n    check(mean_absolute_deviation)\n    ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"solution.py\", line 25, in check\n    assert abs(mean_absolute_deviation([1.0, 2.0, 3.0]) - 2.0/3.0) < 1e-6\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n```\n\nIn at most three sentences, state the root cause of the bug. Do not write code."
+ },
+ "response": {
+  "text": "The function divides the sum of absolute deviations by the mean of the numbers instead of by the count of numbers. This uses the wrong denominator, producing a value that is too large (or too small) for the mean absolute deviation. The test expects the correct formula, which divides by the number of elements.",
+  "prompt_tokens": 260,
+  "completion_tokens": 86,
+  "ttft_ms": 442.6393190000226,
+  "total_ms": 692.812129999993,
+  "tokens_estimated": false,
+  "queue_wait_ms": 0.0,
+  "finish_reason": "stop",
+  "reasoning_tokens": 16
+ }
+}

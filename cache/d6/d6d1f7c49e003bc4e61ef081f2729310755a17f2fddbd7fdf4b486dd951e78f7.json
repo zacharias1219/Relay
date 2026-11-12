@@ -1,0 +1,27 @@
+{
+ "key": "d6d1f7c49e003bc4e61ef081f2729310755a17f2fddbd7fdf4b486dd951e78f7",
+ "created_at": "2026-11-12T10:03:55.749+00:00",
+ "request": {
+  "backend": "groq-small",
+  "model_id": "openai/gpt-oss-20b",
+  "params": {
+   "max_tokens": 3072,
+   "temperature": 0.0,
+   "extra": {
+    "reasoning_effort": "low"
+   }
+  },
+  "prompt": "Fix the bug in this Python function.\n\nCode:\n```python\ndef greatest_common_divisor(a: int, b: int) -> int:\n    while b:\n        a, b = b, a % b\n    return b\n```\n\nTest output:\n```\nTraceback (most recent call last):\n  File \"solution.py\", line 28, in <module>\n    check(greatest_common_divisor)\n    ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"solution.py\", line 23, in check\n    assert greatest_common_divisor(3, 7) == 1\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n```\n\nDiagnosis: The function returns `b` after the loop, but at that point `b` is always `0`; the greatest common divisor is stored in `a`. Thus the function incorrectly returns `0` for all inputs, causing the test to fail.\n\nReturn the complete corrected function, with any imports it needs, in a single ```python code block. No explanation."
+ },
+ "response": {
+  "text": "```python\ndef greatest_common_divisor(a: int, b: int) -> int:\n    a, b = abs(a), abs(b)\n    while b:\n        a, b = b, a % b\n    return a\n```\n",
+  "prompt_tokens": 282,
+  "completion_tokens": 78,
+  "ttft_ms": 437.9983609999272,
+  "total_ms": 548.3699320000142,
+  "tokens_estimated": false,
+  "queue_wait_ms": 0.0,
+  "finish_reason": "stop",
+  "reasoning_tokens": 18
+ }
+}

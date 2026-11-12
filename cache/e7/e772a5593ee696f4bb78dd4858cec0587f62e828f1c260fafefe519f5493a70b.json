@@ -1,0 +1,27 @@
+{
+ "key": "e772a5593ee696f4bb78dd4858cec0587f62e828f1c260fafefe519f5493a70b",
+ "created_at": "2026-11-12T10:04:15.400+00:00",
+ "request": {
+  "backend": "groq-small",
+  "model_id": "openai/gpt-oss-20b",
+  "params": {
+   "max_tokens": 3072,
+   "temperature": 0.0,
+   "extra": {
+    "reasoning_effort": "low"
+   }
+  },
+  "prompt": "Fix the bug in this Python function.\n\nCode:\n```python\nfrom typing import List\n\n\ndef filter_by_prefix(strings: List[str], prefix: str) -> List[str]:\n    return [x for x in strings if x.endswith(prefix)]\n```\n\nTest output:\n```\nTraceback (most recent call last):\n  File \"solution.py\", line 27, in <module>\n    check(filter_by_prefix)\n    ~~~~~^^^^^^^^^^^^^^^^^^\n  File \"solution.py\", line 25, in check\n    assert filter_by_prefix(['xxx', 'asd', 'xxy', 'john doe', 'xxxAAA', 'xxx'], 'xxx') == ['xxx', 'xxxAAA', 'xxx']\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n```\n\nDiagnosis: The function mistakenly checks if each string **ends** with the given prefix (`x.endswith(prefix)`) instead of checking if it **starts** with the prefix. This causes it to miss strings that begin with the prefix but do not end with it, leading to the assertion failure.\n\nReturn the complete corrected function, with any imports it needs, in a single ```python code block. No explanation."
+ },
+ "response": {
+  "text": "```python\nfrom typing import List\n\n\ndef filter_by_prefix(strings: List[str], prefix: str) -> List[str]:\n    return [x for x in strings if x.startswith(prefix)]\n```\n",
+  "prompt_tokens": 317,
+  "completion_tokens": 60,
+  "ttft_ms": 382.76238100002047,
+  "total_ms": 449.20894400002,
+  "tokens_estimated": false,
+  "queue_wait_ms": 5098.5,
+  "finish_reason": "stop",
+  "reasoning_tokens": 11
+ }
+}

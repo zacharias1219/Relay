@@ -1,0 +1,27 @@
+{
+ "key": "d3dd66837ac6627c5ce0c9ed2bc96d23dcefc23adbf76ee130397a1538b3d153",
+ "created_at": "2026-11-12T10:02:49.780+00:00",
+ "request": {
+  "backend": "groq-large",
+  "model_id": "openai/gpt-oss-120b",
+  "params": {
+   "max_tokens": 3072,
+   "temperature": 0.0,
+   "extra": {
+    "reasoning_effort": "low"
+   }
+  },
+  "prompt": "Fix the bug in this Python function.\n\nCode:\n```python\nfrom typing import List\n\n\ndef mean_absolute_deviation(numbers: List[float]) -> float:\n    mean = sum(numbers) / len(numbers)\n    return sum(abs(x - mean) for x in numbers) / mean\n```\n\nTest output:\n```\nTraceback (most recent call last):\n  File \"solution.py\", line 29, in <module>\n    check(mean_absolute_deviation)\n    ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"solution.py\", line 25, in check\n    assert abs(mean_absolute_deviation([1.0, 2.0, 3.0]) - 2.0/3.0) < 1e-6\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n```\n\nDiagnosis: The function computes the mean correctly but then divides the summed absolute deviations by `mean` instead of by the number of elements. This makes the result scale incorrectly (e.g., for `[1,2,3]` it returnsâ¯1â¯instead ofâ¯2/3). The denominator should be the count (`len(numbers)`), not the mean.\n\nReturn the complete corrected function, with any imports it needs, in a single ```python code block. No explanation."
+ },
+ "response": {
+  "text": "```python\nfrom typing import List\n\n\ndef mean_absolute_deviation(numbers: List[float]) -> float:\n    if not numbers:\n        raise ValueError(\"The input list must not be empty.\")\n    mean = sum(numbers) / len(numbers)\n    return sum(abs(x - mean) for x in numbers) / len(numbers)\n```",
+  "prompt_tokens": 344,
+  "completion_tokens": 84,
+  "ttft_ms": 614.5917770000437,
+  "total_ms": 783.089799000038,
+  "tokens_estimated": false,
+  "queue_wait_ms": 15380.5,
+  "finish_reason": "stop",
+  "reasoning_tokens": 7
+ }
+}

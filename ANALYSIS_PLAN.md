@@ -75,3 +75,11 @@ it had made every call it needed.
 ## Change log
 
 - 2026-11-12: plan written; no real traces exist yet.
+- 2026-11-12: Groq's free tier offers only GPT-OSS reasoning models, so
+  groq-small = gpt-oss-20b and groq-large = gpt-oss-120b, with larger
+  per-backend max_tokens and reasoning_effort low. No metric or test changed.
+- 2026-11-12: local-small ran on the cloud build container's CPU (no laptop
+  available). Recorded in config.yaml and every run_meta; reported on the page.
+- 2026-11-12: first live run complete for P0-P3 (see RESULTS.md). The eight
+  overfit-probe candidates were reviewed by Claude and dismissed with
+  reasons in analysis/annotations.yaml; a human should confirm.

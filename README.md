@@ -32,9 +32,14 @@ in the failure gallery as "hit max_tokens", not as a wrong fix.
 
 ## Status
 
-The whole pipeline is built and tested. **No real experiment has been run
-yet**: that needs your Groq key, a llama.cpp server on your laptop, and
-several days of free-tier budget (see [docs/RUNBOOK.md](docs/RUNBOOK.md)).
+**First live run complete (2026-11-12).** All four policies ran on all 40
+tasks with GPT-OSS 20B and 120B on Groq and Qwen2.5-Coder-7B on llama.cpp.
+Findings, with caveats, are in [RESULTS.md](RESULTS.md); in short: every
+routed policy matched P0's pass rate (no detectable difference at n = 40) and
+was cheaper per solved task, and P3 was about a sixth of P0's cost but much
+slower, because its "local" model ran on a cloud CPU at 4 tokens/s.
+`make repro` rebuilds every number from the committed traces with zero API
+calls. To rerun P3 on a real laptop, follow [docs/RUNBOOK.md](docs/RUNBOOK.md).
 
 What *is* in the repo is an offline **synthetic demo**: the same runner,
 cache, traces, sandbox, statistics and results page, driven by a deterministic

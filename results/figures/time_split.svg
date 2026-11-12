@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 240" width="640" height="240" role="img" aria-label="Time split per policy">
+<style>
+  .surface { fill: #fcfcfb; }
+  .ink { fill: #0b0b0b; } .ink2 { fill: #52514e; } .muted { fill: #898781; }
+  .grid { stroke: #e1e0d9; stroke-width: 1; } .axis { stroke: #c3c2b7; stroke-width: 1; }
+  .zero { stroke: #52514e; stroke-width: 1; stroke-dasharray: 3 3; }
+  .s1 { fill: #2a78d6; stroke: #2a78d6; } .s2 { fill: #eb6834; stroke: #eb6834; } .s3 { fill: #1baf7a; stroke: #1baf7a; }
+  .dot { fill: #0b0b0b; stroke: #fcfcfb; stroke-width: 2; } .whisker { stroke: #52514e; stroke-width: 2; }
+  .gap { stroke: #fcfcfb; stroke-width: 2; }
+  text { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; font-size: 12px; }
+  .title { font-size: 13px; font-weight: 600; }
+  .tab { font-variant-numeric: tabular-nums; }
+  @media (prefers-color-scheme: dark) {
+    .surface { fill: #1a1a19; }
+    .ink { fill: #f0efec; } .ink2 { fill: #c3c2b7; }
+    .grid { stroke: #2c2c2a; } .axis { stroke: #383835; } .zero { stroke: #c3c2b7; }
+    .s1 { fill: #3987e5; stroke: #3987e5; } .s2 { fill: #d95926; stroke: #d95926; } .s3 { fill: #199e70; stroke: #199e70; }
+    .dot { fill: #f0efec; stroke: #1a1a19; } .whisker { stroke: #c3c2b7; } .gap { stroke: #1a1a19; }
+  }
+</style>
+<rect class="surface" width="640" height="240" rx="8"/><text class="ink title" x="16" y="24">Where the time went, all tasks summed</text><rect class="s1" x="16" y="36" width="12" height="12" rx="3"/><text class="ink2" x="34" y="46">model time</text><rect class="s2" x="136" y="36" width="12" height="12" rx="3"/><text class="ink2" x="154" y="46">test time</text><rect class="s3" x="256" y="36" width="12" height="12" rx="3"/><text class="ink2" x="274" y="46">queue wait</text><line class="grid" x1="170.0" x2="170.0" y1="58" y2="206"/><text class="muted tab" x="170.0" y="224" text-anchor="middle">0 s</text><line class="grid" x1="318.66666666666663" x2="318.66666666666663" y1="58" y2="206"/><text class="muted tab" x="318.66666666666663" y="224" text-anchor="middle">250 s</text><line class="grid" x1="467.3333333333333" x2="467.3333333333333" y1="58" y2="206"/><text class="muted tab" x="467.3333333333333" y="224" text-anchor="middle">500 s</text><line class="grid" x1="616.0" x2="616.0" y1="58" y2="206"/><text class="muted tab" x="616.0" y="224" text-anchor="middle">750 s</text><text class="ink" x="16" y="85">P0 all-large</text><rect class="s1" x="170" y="70" width="39.392368000000005" height="20" rx="4"><title>P0 model time: 69.61 s</title></rect><rect class="s2" x="211.392368" y="70" width="1" height="20" rx="4"><title>P0 test time: 4.00 s</title></rect><rect class="s3" x="213.768656" y="70" width="172.6935616" height="20" rx="4"><title>P0 queue wait: 293.77 s</title></rect><text class="ink" x="16" y="119">P1 all-small</text><rect class="s1" x="170" y="104" width="31.77546106666665" height="20" rx="4"><title>P1 model time: 56.80 s</title></rect><rect class="s2" x="203.77546106666665" y="104" width="1" height="20" rx="4"><title>P1 test time: 3.68 s</title></rect><rect class="s3" x="205.96181253333333" y="104" width="130.55702773333337" height="20" rx="4"><title>P1 queue wait: 222.91 s</title></rect><text class="ink" x="16" y="153">P2 by stage</text><rect class="s1" x="170" y="138" width="31.87911146666667" height="20" rx="4"><title>P2 model time: 56.97 s</title></rect><rect class="s2" x="203.87911146666667" y="138" width="1" height="20" rx="4"><title>P2 test time: 3.91 s</title></rect><rect class="s3" x="206.20140373333334" y="138" width="82.85905226666665" height="20" rx="4"><title>P2 queue wait: 142.70 s</title></rect><text class="ink" x="16" y="187">P3 cheap-then-verify</text><rect class="s1" x="170" y="172" width="472.6607925333334" height="20" rx="4"><title>P3 model time: 798.20 s</title></rect><rect class="s2" x="644.6607925333334" y="172" width="1" height="20" rx="4"><title>P3 test time: 3.83 s</title></rect></svg>

@@ -1,0 +1,27 @@
+{
+ "key": "c824edd2f15a57e3a0cb98bf9e6172d3f18c85825cea5caad0d8ba2580273c23",
+ "created_at": "2026-11-12T10:29:45.285+00:00",
+ "request": {
+  "backend": "groq-large",
+  "model_id": "openai/gpt-oss-120b",
+  "params": {
+   "max_tokens": 3072,
+   "temperature": 0.0,
+   "extra": {
+    "reasoning_effort": "low"
+   }
+  },
+  "prompt": "Fix the bug in this Python function.\n\nCode:\n```python\ndef fibfib(n: int):\n    if n == 0:\n        return 0\n    if n == 1:\n        return 1\n    if n == 2:\n        return 2\n    return fibfib(n - 1) + fibfib(n - 2) + fibfib(n - 3)\n```\n\nTest output:\n```\nTraceback (most recent call last):\n  File \"solution.py\", line 35, in <module>\n    check(fibfib)\n    ~~~~~^^^^^^^^\n  File \"solution.py\", line 27, in check\n    assert fibfib(2) == 1\n           ^^^^^^^^^^^^^^\nAssertionError\n```\n\nA previous fix was tried and still fails.\nPrevious fix:\n```python\ndef fibfib(n: int) -> int:\n    if n == 0:\n        return 0\n    if n == 1:\n        return 1\n    return fibfib(n - 1) + fibfib(n - 2)\n```\nIts test output:\n```\nTraceback (most recent call last):\n  File \"solution.py\", line 33, in <module>\n    check(fibfib)\n    ~~~~~^^^^^^^^\n  File \"solution.py\", line 26, in check\n    assert fibfib(1) == 0\n           ^^^^^^^^^^^^^^\nAssertionError\n```\n\nReturn the complete corrected function, with any imports it needs, in a single ```python code block. No explanation."
+ },
+ "response": {
+  "text": "```python\ndef fibfib(n: int) -> int:\n    if n <= 0:\n        return 0\n    if n == 1:\n        return 0\n    # Use simple recursion with memoization to improve performance\n    memo = {0: 0, 1: 0}\n    def helper(k: int) -> int:\n        if k in memo:\n            return memo[k]\n        memo[k] = helper(k - 1) + helper(k - 2)\n        return memo[k]\n    return helper(n)\n```",
+  "prompt_tokens": 392,
+  "completion_tokens": 259,
+  "ttft_ms": 265.81627099994876,
+  "total_ms": 799.7986339996714,
+  "tokens_estimated": false,
+  "queue_wait_ms": 0.0,
+  "finish_reason": "stop",
+  "reasoning_tokens": 136
+ }
+}

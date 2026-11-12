@@ -1,0 +1,27 @@
+{
+ "key": "1b6bde244271615a9386f953862b0147e1655ef199c654a03b0002afd3e4e53b",
+ "created_at": "2026-11-12T10:28:25.127+00:00",
+ "request": {
+  "backend": "groq-small",
+  "model_id": "openai/gpt-oss-20b",
+  "params": {
+   "max_tokens": 3072,
+   "temperature": 0.0,
+   "extra": {
+    "reasoning_effort": "low"
+   }
+  },
+  "prompt": "Fix the bug in this Python function.\n\nCode:\n```python\ndef add(x: int, y: int):\n    return x + y + y + x\n```\n\nTest output:\n```\nTraceback (most recent call last):\n  File \"solution.py\", line 33, in <module>\n    check(add)\n    ~~~~~^^^^^\n  File \"solution.py\", line 23, in check\n    assert add(0, 1) == 1\n           ^^^^^^^^^^^^^^\nAssertionError\n```\n\nA previous fix was tried and still fails.\nPrevious fix:\n```python\ndef add(x: int, y: int):\n    return x + y + y + x\n```\nIts test output:\n```\nTraceback (most recent call last):\n  File \"solution.py\", line 33, in <module>\n    check(add)\n    ~~~~~^^^^^\n  File \"solution.py\", line 23, in check\n    assert add(0, 1) == 1\n           ^^^^^^^^^^^^^^\nAssertionError\n```\n\nReturn the complete corrected function, with any imports it needs, in a single ```python code block. No explanation."
+ },
+ "response": {
+  "text": "```python\ndef add(x: int, y: int) -> int:\n    return x + y\n```\n",
+  "prompt_tokens": 315,
+  "completion_tokens": 62,
+  "ttft_ms": 356.001114000037,
+  "total_ms": 451.0481710001386,
+  "tokens_estimated": false,
+  "queue_wait_ms": 0.0,
+  "finish_reason": "stop",
+  "reasoning_tokens": 29
+ }
+}

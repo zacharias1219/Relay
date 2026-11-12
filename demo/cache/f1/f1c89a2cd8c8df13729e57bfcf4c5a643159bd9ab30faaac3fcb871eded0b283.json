@@ -1,0 +1,27 @@
+{
+ "key": "f1c89a2cd8c8df13729e57bfcf4c5a643159bd9ab30faaac3fcb871eded0b283",
+ "created_at": "2026-11-12T09:36:46.706+00:00",
+ "request": {
+  "backend": "groq-small",
+  "model_id": "sim-gpt-oss-20b",
+  "params": {
+   "max_tokens": 1024,
+   "temperature": 0.0,
+   "extra": {
+    "reasoning_effort": "low"
+   }
+  },
+  "prompt": "A Python function fails its tests.\n\nCode:\n```python\nfrom typing import List\n\n\ndef parse_nested_parens(paren_string: str) -> List[int]:\n    def parse_paren_group(s):\n        depth = 0\n        max_depth = 0\n        for c in s:\n            if c == '(':\n                depth += 1\n                max_depth = max(depth, max_depth)\n            else:\n                max_depth -= 1\n\n        return max_depth\n\n    return [parse_paren_group(x) for x in paren_string.split(' ') if x]\n```\n\nTest output:\n```\nTraceback (most recent call last):\n  File \"solution.py\", line 40, in <module>\n    check(parse_nested_parens)\n    ~~~~~^^^^^^^^^^^^^^^^^^^^^\n  File \"solution.py\", line 36, in check\n    assert parse_nested_parens('(()()) ((())) () ((())()())') == [2, 3, 1, 3]\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n```\n\nIn at most three sentences, state the root cause of the bug. Do not write code."
+ },
+ "response": {
+  "text": "The bug in `parse_nested_parens` looks like variable misuse, which produces incorrect output (sim-gpt-oss-20b).",
+  "prompt_tokens": 233,
+  "completion_tokens": 242,
+  "ttft_ms": 165.5,
+  "total_ms": 483.6,
+  "tokens_estimated": true,
+  "queue_wait_ms": 0.0,
+  "finish_reason": "stop",
+  "reasoning_tokens": 215
+ }
+}

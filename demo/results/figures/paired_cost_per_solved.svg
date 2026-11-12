@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 182" width="640" height="182" role="img" aria-label="Change in cost per solved task against the baseline (paired, 95%)">
+<style>
+  .surface { fill: #fcfcfb; }
+  .ink { fill: #0b0b0b; } .ink2 { fill: #52514e; } .muted { fill: #898781; }
+  .grid { stroke: #e1e0d9; stroke-width: 1; } .axis { stroke: #c3c2b7; stroke-width: 1; }
+  .zero { stroke: #52514e; stroke-width: 1; stroke-dasharray: 3 3; }
+  .s1 { fill: #2a78d6; stroke: #2a78d6; } .s2 { fill: #eb6834; stroke: #eb6834; } .s3 { fill: #1baf7a; stroke: #1baf7a; }
+  .dot { fill: #0b0b0b; stroke: #fcfcfb; stroke-width: 2; } .whisker { stroke: #52514e; stroke-width: 2; }
+  .gap { stroke: #fcfcfb; stroke-width: 2; }
+  text { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; font-size: 12px; }
+  .title { font-size: 13px; font-weight: 600; }
+  .tab { font-variant-numeric: tabular-nums; }
+  @media (prefers-color-scheme: dark) {
+    .surface { fill: #1a1a19; }
+    .ink { fill: #f0efec; } .ink2 { fill: #c3c2b7; }
+    .grid { stroke: #2c2c2a; } .axis { stroke: #383835; } .zero { stroke: #c3c2b7; }
+    .s1 { fill: #3987e5; stroke: #3987e5; } .s2 { fill: #d95926; stroke: #d95926; } .s3 { fill: #199e70; stroke: #199e70; }
+    .dot { fill: #f0efec; stroke: #1a1a19; } .whisker { stroke: #c3c2b7; } .gap { stroke: #1a1a19; }
+  }
+</style>
+<rect class="surface" width="640" height="182" rx="8"/><text class="ink title" x="16" y="24">Change in cost per solved task against the baseline (paired, 95%)</text><line class="grid" x1="172.58213408794188" x2="172.58213408794188" y1="38" y2="152"/><text class="muted tab" x="172.58213408794188" y="170" text-anchor="middle">-$0.0004</text><line class="grid" x1="373.62440037730426" x2="373.62440037730426" y1="38" y2="152"/><text class="muted tab" x="373.62440037730426" y="170" text-anchor="middle">-$0.0002</text><line class="grid" x1="574.6666666666666" x2="574.6666666666666" y1="38" y2="152"/><text class="muted tab" x="574.6666666666666" y="170" text-anchor="middle">+$0</text><line class="zero" x1="574.6666666666666" x2="574.6666666666666" y1="34" y2="152"/><text class="ink" x="16" y="65.0">P1 vs P0</text><line class="whisker" x1="297.5554519315416" x2="452.07555831101354" y1="61.0" y2="61.0"/><circle class="dot" cx="371.65966913856744" cy="61.0" r="6"><title>P1 minus P0: −$0.000202 [−$0.000276, −$0.000122] - better than baseline</title></circle><text class="ink" x="16" y="99.0">P2 vs P0</text><line class="whisker" x1="379.2494704475104" x2="526.3905589232486" y1="95.0" y2="95.0"/><circle class="dot" cx="447.4388343572423" cy="95.0" r="6"><title>P2 minus P0: −$0.000127 [−$0.000194, −$0.0000480] - better than baseline</title></circle><text class="ink" x="16" y="133.0">P3 vs P0</text><line class="whisker" x1="161.33333333333331" x2="346.7370420142215" y1="129.0" y2="129.0"/><circle class="dot" cx="252.41685570755732" cy="129.0" r="6"><title>P3 minus P0: −$0.000321 [−$0.000411, −$0.000227] - better than baseline</title></circle></svg>

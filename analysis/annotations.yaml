@@ -1,0 +1,54 @@
+# Human judgement that the traces cannot supply. The analysis reads this file
+# and nothing else beyond the traces and the cache.
+#
+# failure_reasons: override the automatic "likely reason" for a task.
+#   HumanEvalFix/12: "the model rewrote the tie-break rule instead of the comparison"
+#
+# plainly_wrong: patches that pass the tests but are wrong. Start from the
+# overfit-probe candidates in results/tables/failures.md, read the patch, and
+# confirm here with the code_hash shown there.
+#   - task_id: HumanEvalFix/12
+#     policy: P1
+#     code_hash: "<sha256 from the candidate list>"
+#     note: "hard-codes the three tested inputs"
+#
+# dismissed: candidates you read and judged fine (e.g. the perturbed input is
+# outside the documented domain). Same keys: task_id, code_hash, note.
+failure_reasons: {}
+plainly_wrong: []
+# Overfit-probe candidates from the first live run (2026-11-12). Every one
+# fails only on a perturbed input that breaks the task's stated preconditions.
+# Reviewed by Claude; overrule by moving an entry to plainly_wrong.
+dismissed:
+  - task_id: HumanEvalFix/111
+    code_hash: "24a73435c1645272772e8f77afedfc9a9904613b1d47de9e42de0472461f6c15"
+    policies: [P0]
+    note: "Reviewed by Claude, 2026-11-12: perturbed input has a leading space; spec says space-separated lowercase letters. The reference counts '' as a letter there; the patch is arguably more correct."
+  - task_id: HumanEvalFix/111
+    code_hash: "8574975b96dea55bead6384408c28fcc5d1bc929e7587ddc1ce1442df5c98945"
+    policies: [P2]
+    note: "Reviewed by Claude, 2026-11-12: perturbed input has a leading space; spec says space-separated lowercase letters. The reference counts '' as a letter there; the patch is arguably more correct."
+  - task_id: HumanEvalFix/111
+    code_hash: "e6f9fb0767af2082e42fcdcc8d3f251e6337c1cd385c9f977a39db06422c8958"
+    policies: [P1]
+    note: "Reviewed by Claude, 2026-11-12: perturbed input has a leading space; spec says space-separated lowercase letters. The reference counts '' as a letter there; the patch is arguably more correct."
+  - task_id: HumanEvalFix/129
+    code_hash: "15048488d25c3a459d317e98a128d16789ad3030d2fa8975afb49bc52bd750a6"
+    policies: [P1]
+    note: "Reviewed by Claude, 2026-11-12: perturbed grid is 3x4; spec requires an N x N grid. Outside the domain."
+  - task_id: HumanEvalFix/129
+    code_hash: "52fdb3bb9052e84254067dc7a419b9476b1d6e7c8897f9511c4686e43cbed500"
+    policies: [P3]
+    note: "Reviewed by Claude, 2026-11-12: perturbed grid is 3x4; spec requires an N x N grid. Outside the domain."
+  - task_id: HumanEvalFix/129
+    code_hash: "f131fc3488f4aa1857cafb6979853efd4a8c5695af0f8b7a70f5588b8ca8282a"
+    policies: [P2]
+    note: "Reviewed by Claude, 2026-11-12: perturbed grid is 3x4; spec requires an N x N grid. Outside the domain."
+  - task_id: HumanEvalFix/6
+    code_hash: "6cf3f9c8b5551a7858e9fc1b0d1612b88786e2cddcbc5face90e33c0c1f5145a"
+    policies: [P2]
+    note: "Reviewed by Claude, 2026-11-12: perturbed strings have unbalanced parentheses; spec gives well-formed groups. Raising or returning other depths on malformed input is not a fix error."
+  - task_id: HumanEvalFix/6
+    code_hash: "a128cff6e2d37d267b31e299bed5b9a85b654c6a9c6a7a4835f62b8483378496"
+    policies: [P1]
+    note: "Reviewed by Claude, 2026-11-12: perturbed strings have unbalanced parentheses; spec gives well-formed groups. Raising or returning other depths on malformed input is not a fix error."

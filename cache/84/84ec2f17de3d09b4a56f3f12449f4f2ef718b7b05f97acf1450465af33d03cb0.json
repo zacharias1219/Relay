@@ -1,0 +1,27 @@
+{
+ "key": "84ec2f17de3d09b4a56f3f12449f4f2ef718b7b05f97acf1450465af33d03cb0",
+ "created_at": "2026-11-12T10:03:26.324+00:00",
+ "request": {
+  "backend": "groq-large",
+  "model_id": "openai/gpt-oss-120b",
+  "params": {
+   "max_tokens": 1024,
+   "temperature": 0.0,
+   "extra": {
+    "reasoning_effort": "low"
+   }
+  },
+  "prompt": "A Python function fails its tests.\n\nCode:\n```python\ndef strlen(string: str) -> int:\n    return len(string) - 1\n```\n\nTest output:\n```\nTraceback (most recent call last):\n  File \"solution.py\", line 25, in <module>\n    check(strlen)\n    ~~~~~^^^^^^^^\n  File \"solution.py\", line 21, in check\n    assert strlen('') == 0\n           ^^^^^^^^^^^^^^^\nAssertionError\n```\n\nIn at most three sentences, state the root cause of the bug. Do not write code."
+ },
+ "response": {
+  "text": "The function subtractsâ¯1 from the actual length, so it returns an offâbyâone value (e.g., `len('') - 1` yieldsâ¯â1). This makes the result incorrect for all inputs, causing the assertion that `strlen('') == 0` to fail. The bug is the unnecessary `- 1` in the return statement.",
+  "prompt_tokens": 191,
+  "completion_tokens": 117,
+  "ttft_ms": 337.2256490000609,
+  "total_ms": 568.941910000035,
+  "tokens_estimated": false,
+  "queue_wait_ms": 0.0,
+  "finish_reason": "stop",
+  "reasoning_tokens": 31
+ }
+}

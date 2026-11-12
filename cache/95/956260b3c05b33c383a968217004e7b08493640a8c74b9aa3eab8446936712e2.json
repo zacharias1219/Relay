@@ -1,0 +1,24 @@
+{
+ "key": "956260b3c05b33c383a968217004e7b08493640a8c74b9aa3eab8446936712e2",
+ "created_at": "2026-11-12T10:10:53.495+00:00",
+ "request": {
+  "backend": "local-small",
+  "model_id": "qwen2.5-coder-7b-instruct-q4_k_m",
+  "params": {
+   "max_tokens": 16,
+   "temperature": 0.0
+  },
+  "prompt": "Reply with the single word: pong"
+ },
+ "response": {
+  "text": "pong",
+  "prompt_tokens": 8,
+  "completion_tokens": 1,
+  "ttft_ms": 1829.7866240000076,
+  "total_ms": 2052.137592000008,
+  "tokens_estimated": true,
+  "queue_wait_ms": 0.0,
+  "finish_reason": "stop",
+  "reasoning_tokens": null
+ }
+}

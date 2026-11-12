@@ -1,0 +1,27 @@
+{
+ "key": "a62680733a24f1c0e313c72beae31b26a14ec004cd954949f0c4516b0460e200",
+ "created_at": "2026-11-12T10:03:56.505+00:00",
+ "request": {
+  "backend": "groq-small",
+  "model_id": "openai/gpt-oss-20b",
+  "params": {
+   "max_tokens": 1024,
+   "temperature": 0.0,
+   "extra": {
+    "reasoning_effort": "low"
+   }
+  },
+  "prompt": "A Python function fails its tests.\n\nCode:\n```python\nfrom typing import List\n\n\ndef rescale_to_unit(numbers: List[float]) -> List[float]:\n    min_number = min(numbers)\n    max_number = max(numbers)\n    return [(x - min_number) / (max_number + min_number) for x in numbers]\n```\n\nTest output:\n```\nTraceback (most recent call last):\n  File \"solution.py\", line 32, in <module>\n    check(rescale_to_unit)\n    ~~~~~^^^^^^^^^^^^^^^^^\n  File \"solution.py\", line 26, in check\n    assert rescale_to_unit([2.0, 49.9]) == [0.0, 1.0]\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n```\n\nIn at most three sentences, state the root cause of the bug. Do not write code."
+ },
+ "response": {
+  "text": "The function normalises by dividing by `max_number + min_number`, which is incorrect; it should divide by the range `max_number - min_number`. This causes the second value to be less than 1 (and can produce division by zero when all numbers are equal).",
+  "prompt_tokens": 255,
+  "completion_tokens": 84,
+  "ttft_ms": 587.3413979999214,
+  "total_ms": 670.7327909999776,
+  "tokens_estimated": false,
+  "queue_wait_ms": 0.0,
+  "finish_reason": "stop",
+  "reasoning_tokens": 20
+ }
+}

@@ -1,0 +1,27 @@
+{
+ "key": "af64ebb6f84fe7cf6086bae975d29d41ebcf2e7a864a10bab9c42d0b527e7c30",
+ "created_at": "2026-11-12T10:09:31.195+00:00",
+ "request": {
+  "backend": "groq-small",
+  "model_id": "openai/gpt-oss-20b",
+  "params": {
+   "max_tokens": 3072,
+   "temperature": 0.0,
+   "extra": {
+    "reasoning_effort": "low"
+   }
+  },
+  "prompt": "Fix the bug in this Python function.\n\nCode:\n```python\ndef triangle_area(a, h):\n    return a * h / 0.5\n```\n\nTest output:\n```\nTraceback (most recent call last):\n  File \"solution.py\", line 25, in <module>\n    check(triangle_area)\n    ~~~~~^^^^^^^^^^^^^^^\n  File \"solution.py\", line 21, in check\n    assert triangle_area(5, 3) == 7.5\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n```\n\nDiagnosis: The function divides byâ¯0.5 instead of multiplying byâ¯0.5, so it returnsâ¯aâ¯Ãâ¯hâ¯Ã·â¯0.5â¯=â¯2â¯Ãâ¯(aâ¯Ãâ¯h) rather than the intended (aâ¯Ãâ¯h)/2. This doubleâscales the area, causing the assertion to fail.\n\nReturn the complete corrected function, with any imports it needs, in a single ```python code block. No explanation."
+ },
+ "response": {
+  "text": "```python\ndef triangle_area(a, h):\n    return a * h / 2\n```\n",
+  "prompt_tokens": 326,
+  "completion_tokens": 52,
+  "ttft_ms": 391.88869700001305,
+  "total_ms": 441.0761010000215,
+  "tokens_estimated": false,
+  "queue_wait_ms": 0.0,
+  "finish_reason": "stop",
+  "reasoning_tokens": 22
+ }
+}

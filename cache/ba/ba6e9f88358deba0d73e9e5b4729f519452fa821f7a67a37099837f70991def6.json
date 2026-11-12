@@ -1,0 +1,27 @@
+{
+ "key": "ba6e9f88358deba0d73e9e5b4729f519452fa821f7a67a37099837f70991def6",
+ "created_at": "2026-11-12T10:14:39.349+00:00",
+ "request": {
+  "backend": "groq-large",
+  "model_id": "openai/gpt-oss-120b",
+  "params": {
+   "max_tokens": 3072,
+   "temperature": 0.0,
+   "extra": {
+    "reasoning_effort": "low"
+   }
+  },
+  "prompt": "Fix the bug in this Python function.\n\nCode:\n```python\ndef get_row(lst, x):\n    coords = [(j, i) for i in range(len(lst)) for j in range(len(lst[i])) if lst[i][j] == x]\n    return sorted(sorted(coords, key=lambda x: x[1], reverse=True), key=lambda x: x[0])\n```\n\nTest output:\n```\nTraceback (most recent call last):\n  File \"solution.py\", line 48, in <module>\n    check(get_row)\n    ~~~~~^^^^^^^^^\n  File \"solution.py\", line 19, in check\n    assert get_row([\n           ^^^^^^^^^\n    ...<3 lines>...\n    ], 1) == [(0, 0), (1, 4), (1, 0), (2, 5), (2, 0)]\n    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n```\n\nDiagnosis: The function sorts the coordinates in the wrong order: it first orders by column descending and then by row ascending, whereas the expected result requires sorting by row ascending and, within each row, by column descending. This reversed sorting logic causes the returned list to be out of order.\n\nReturn the complete corrected function, with any imports it needs, in a single ```python code block. No explanation."
+ },
+ "response": {
+  "text": "```python\ndef get_row(lst, x):\n    coords = [(j, i) for i in range(len(lst)) for j in range(len(lst[i])) if lst[i][j] == x]\n    return sorted(coords, key=lambda p: (p[1], -p[0]))\n```",
+  "prompt_tokens": 347,
+  "completion_tokens": 182,
+  "ttft_ms": 282.6607629999671,
+  "total_ms": 660.3300990000207,
+  "tokens_estimated": false,
+  "queue_wait_ms": 3198.2,
+  "finish_reason": "stop",
+  "reasoning_tokens": 111
+ }
+}

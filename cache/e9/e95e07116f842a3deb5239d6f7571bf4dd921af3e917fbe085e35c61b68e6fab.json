@@ -1,0 +1,27 @@
+{
+ "key": "e95e07116f842a3deb5239d6f7571bf4dd921af3e917fbe085e35c61b68e6fab",
+ "created_at": "2026-11-12T10:09:35.934+00:00",
+ "request": {
+  "backend": "groq-small",
+  "model_id": "openai/gpt-oss-20b",
+  "params": {
+   "max_tokens": 3072,
+   "temperature": 0.0,
+   "extra": {
+    "reasoning_effort": "low"
+   }
+  },
+  "prompt": "Fix the bug in this Python function.\n\nCode:\n```python\ndef fib(n: int):\n    if n == 0:\n        return 0\n    if n == 1:\n        return 1\n    if n == 2:\n        return 2\n    return fib(n - 1) + fib(n - 2)\n```\n\nTest output:\n```\nTraceback (most recent call last):\n  File \"solution.py\", line 33, in <module>\n    check(fib)\n    ~~~~~^^^^^\n  File \"solution.py\", line 27, in check\n    assert fib(10) == 55\n           ^^^^^^^^^^^^^\nAssertionError\n```\n\nDiagnosis: The function incorrectly defines the base case for `n == 2` as returning `2`; the Fibonacci sequence has `fib(2) == 1`. This offâbyâone error propagates, causing `fib(10)` to compute 89 instead of 55. The base cases should be `fib(0)=0`, `fib(1)=1`, and no special case for `n==2`.\n\nReturn the complete corrected function, with any imports it needs, in a single ```python code block. No explanation."
+ },
+ "response": {
+  "text": "```python\ndef fib(n: int) -> int:\n    if n == 0:\n        return 0\n    if n == 1:\n        return 1\n    return fib(n - 1) + fib(n - 2)\n```\n",
+  "prompt_tokens": 331,
+  "completion_tokens": 84,
+  "ttft_ms": 366.85791399997925,
+  "total_ms": 454.4673719999537,
+  "tokens_estimated": false,
+  "queue_wait_ms": 0.0,
+  "finish_reason": "stop",
+  "reasoning_tokens": 22
+ }
+}

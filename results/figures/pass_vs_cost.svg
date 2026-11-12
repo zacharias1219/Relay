@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 360" width="640" height="360" role="img" aria-label="Pass rate against cost per solved task">
+<style>
+  .surface { fill: #fcfcfb; }
+  .ink { fill: #0b0b0b; } .ink2 { fill: #52514e; } .muted { fill: #898781; }
+  .grid { stroke: #e1e0d9; stroke-width: 1; } .axis { stroke: #c3c2b7; stroke-width: 1; }
+  .zero { stroke: #52514e; stroke-width: 1; stroke-dasharray: 3 3; }
+  .s1 { fill: #2a78d6; stroke: #2a78d6; } .s2 { fill: #eb6834; stroke: #eb6834; } .s3 { fill: #1baf7a; stroke: #1baf7a; }
+  .dot { fill: #0b0b0b; stroke: #fcfcfb; stroke-width: 2; } .whisker { stroke: #52514e; stroke-width: 2; }
+  .gap { stroke: #fcfcfb; stroke-width: 2; }
+  text { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; font-size: 12px; }
+  .title { font-size: 13px; font-weight: 600; }
+  .tab { font-variant-numeric: tabular-nums; }
+  @media (prefers-color-scheme: dark) {
+    .surface { fill: #1a1a19; }
+    .ink { fill: #f0efec; } .ink2 { fill: #c3c2b7; }
+    .grid { stroke: #2c2c2a; } .axis { stroke: #383835; } .zero { stroke: #c3c2b7; }
+    .s1 { fill: #3987e5; stroke: #3987e5; } .s2 { fill: #d95926; stroke: #d95926; } .s3 { fill: #199e70; stroke: #199e70; }
+    .dot { fill: #f0efec; stroke: #1a1a19; } .whisker { stroke: #c3c2b7; } .gap { stroke: #1a1a19; }
+  }
+</style>
+<rect class="surface" width="640" height="360" rx="8"/><text class="ink title" x="72" y="22">Pass rate against cost per solved task (95% intervals)</text><line class="grid" x1="72" x2="616" y1="312" y2="312"/><text class="muted tab" x="64" y="316" text-anchor="end">0%</text><line class="grid" x1="72" x2="616" y1="244.0" y2="244.0"/><text class="muted tab" x="64" y="248.0" text-anchor="end">25%</text><line class="grid" x1="72" x2="616" y1="176.0" y2="176.0"/><text class="muted tab" x="64" y="180.0" text-anchor="end">50%</text><line class="grid" x1="72" x2="616" y1="108.0" y2="108.0"/><text class="muted tab" x="64" y="112.0" text-anchor="end">75%</text><line class="grid" x1="72" x2="616" y1="40" y2="40"/><text class="muted tab" x="64" y="44" text-anchor="end">100%</text><text class="muted tab" x="72.0" y="330" text-anchor="middle">$0</text><text class="muted tab" x="344.0" y="330" text-anchor="middle">$0.0002</text><text class="muted tab" x="616.0" y="330" text-anchor="middle">$0.0004</text><line class="axis" x1="72" x2="616" y1="312" y2="312"/><text class="ink2" x="344.0" y="352" text-anchor="middle">list-price USD per solved task</text><line class="whisker" x1="444.56533076923074" x2="745.864660117302" y1="67.19999999999999" y2="67.19999999999999"/><line class="whisker" x1="562.6143333333333" x2="562.6143333333333" y1="94.39999999999999" y2="46.800000000000004"/><circle class="dot" cx="562.6143333333333" cy="67.19999999999999" r="6"><title>P0 all-large: pass 90.0% [80.0%, 97.5%]; cost/solved $0.000361 [$0.000274, $0.000495]</title></circle><text class="ink" x="572.6143333333333" y="59.19999999999999">P0</text><line class="whisker" x1="243.66032625" x2="313.27786714285713" y1="53.60000000000001" y2="53.60000000000001"/><line class="whisker" x1="273.807" x2="273.807" y1="74.0" y2="40.0"/><circle class="dot" cx="273.807" cy="53.60000000000001" r="6"><title>P1 all-small: pass 95.0% [87.5%, 100.0%]; cost/solved $0.000148 [$0.000126, $0.000177]</title></circle><text class="ink" x="283.807" y="45.60000000000001">P1</text><line class="whisker" x1="329.26389" x2="473.5893708333333" y1="53.60000000000001" y2="53.60000000000001"/><line class="whisker" x1="391.4317894736842" x2="391.4317894736842" y1="74.0" y2="40.0"/><circle class="dot" cx="391.4317894736842" cy="53.60000000000001" r="6"><title>P2 by stage: pass 95.0% [87.5%, 100.0%]; cost/solved $0.000235 [$0.000189, $0.000295]</title></circle><text class="ink" x="401.4317894736842" y="45.60000000000001">P2</text><line class="whisker" x1="108.61213500000001" x2="211.92377149122805" y1="53.60000000000001" y2="53.60000000000001"/><line class="whisker" x1="152.60684210526315" x2="152.60684210526315" y1="74.0" y2="40.0"/><circle class="dot" cx="152.60684210526315" cy="53.60000000000001" r="6"><title>P3 cheap-then-verify: pass 95.0% [87.5%, 100.0%]; cost/solved $0.0000593 [$0.0000269, $0.000103]</title></circle><text class="ink" x="162.60684210526315" y="45.60000000000001">P3</text></svg>

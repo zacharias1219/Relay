@@ -1,0 +1,27 @@
+{
+ "key": "09b8a09bbc1f1054ee5c0c860a876c0739c7e5b30007c69df5b3ca9b7d29624d",
+ "created_at": "2026-11-12T10:31:50.819+00:00",
+ "request": {
+  "backend": "groq-large",
+  "model_id": "openai/gpt-oss-120b",
+  "params": {
+   "max_tokens": 3072,
+   "temperature": 0.0,
+   "extra": {
+    "reasoning_effort": "low"
+   }
+  },
+  "prompt": "Fix the bug in this Python function.\n\nCode:\n```python\ndef get_row(lst, x):\n    coords = [(j, i) for i in range(len(lst)) for j in range(len(lst[i])) if lst[i][j] == x]\n    return sorted(sorted(coords, key=lambda x: x[1], reverse=True), key=lambda x: x[0])\n```\n\nTest output:\n```\nTraceback (most recent call last):\n  File \"solution.py\", line 48, in <module>\n    check(get_row)\n    ~~~~~^^^^^^^^^\n  File \"solution.py\", line 19, in check\n    assert get_row([\n           ^^^^^^^^^\n    ...<3 lines>...\n    ], 1) == [(0, 0), (1, 4), (1, 0), (2, 5), (2, 0)]\n    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n```\n\nA previous fix was tried and still fails.\nPrevious fix:\n```python\ndef get_row(lst, x):\n    coords = [(j, i) for i in range(len(lst)) for j in range(len(lst[i])) if lst[i][j] == x]\n    return sorted(coords, key=lambda c: (c[1], -c[0]))\n```\nIts test output:\n```\nTraceback (most recent call last):\n  File \"solution.py\", line 48, in <module>\n    check(get_row)\n    ~~~~~^^^^^^^^^\n  File \"solution.py\", line 19, in check\n    assert get_row([\n           ^^^^^^^^^\n    ...<3 lines>...\n    ], 1) == [(0, 0), (1, 4), (1, 0), (2, 5), (2, 0)]\n    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n```\n\nReturn the complete corrected function, with any imports it needs, in a single ```python code block. No explanation."
+ },
+ "response": {
+  "text": "```python\ndef get_row(lst, x):\n    coords = [(j, i) for i, row in enumerate(lst) for j, val in enumerate(row) if val == x]\n    return sorted(coords, key=lambda c: (c[1], -c[0]))\n```",
+  "prompt_tokens": 483,
+  "completion_tokens": 159,
+  "ttft_ms": 334.57933799991224,
+  "total_ms": 658.8783150000381,
+  "tokens_estimated": false,
+  "queue_wait_ms": 0.0,
+  "finish_reason": "stop",
+  "reasoning_tokens": 91
+ }
+}

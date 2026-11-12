@@ -1,0 +1,24 @@
+{
+ "key": "0777f3eb354350ad9b9479a5eef9d7df773ec121cd75ce4d9d14219c22cad002",
+ "created_at": "2026-11-12T09:36:57.381+00:00",
+ "request": {
+  "backend": "local-small",
+  "model_id": "sim-local-7b",
+  "params": {
+   "max_tokens": 1024,
+   "temperature": 0.0
+  },
+  "prompt": "Fix the bug in this Python function.\n\nCode:\n```python\ndef starts_one_ends(n):\n    if n == 1: return 1\n    return 18 * n * (10 ** (n - 2))\n```\n\nTest output:\n```\nTraceback (most recent call last):\n  File \"solution.py\", line 29, in <module>\n    check(starts_one_ends)\n    ~~~~~^^^^^^^^^^^^^^^^^\n  File \"solution.py\", line 21, in check\n    assert starts_one_ends(2) == 18\n           ^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n```\n\nReturn the complete corrected function, with any imports it needs, in a single ```python code block. No explanation."
+ },
+ "response": {
+  "text": "```python\ndef starts_one_ends(n):\n    if n == 1: return 1\n    return 18 * n * (10 ** (n - 2))\n```",
+  "prompt_tokens": 135,
+  "completion_tokens": 24,
+  "ttft_ms": 791.7,
+  "total_ms": 1972.8,
+  "tokens_estimated": true,
+  "queue_wait_ms": 0.0,
+  "finish_reason": "stop",
+  "reasoning_tokens": null
+ }
+}

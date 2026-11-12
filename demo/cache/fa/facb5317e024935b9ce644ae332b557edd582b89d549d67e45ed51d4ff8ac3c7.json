@@ -1,0 +1,24 @@
+{
+ "key": "facb5317e024935b9ce644ae332b557edd582b89d549d67e45ed51d4ff8ac3c7",
+ "created_at": "2026-11-12T09:36:55.980+00:00",
+ "request": {
+  "backend": "local-small",
+  "model_id": "sim-local-7b",
+  "params": {
+   "max_tokens": 1024,
+   "temperature": 0.0
+  },
+  "prompt": "Fix the bug in this Python function.\n\nCode:\n```python\ndef triangle_area(a, h):\n    return a * h / 0.5\n```\n\nTest output:\n```\nTraceback (most recent call last):\n  File \"solution.py\", line 25, in <module>\n    check(triangle_area)\n    ~~~~~^^^^^^^^^^^^^^^\n  File \"solution.py\", line 21, in check\n    assert triangle_area(5, 3) == 7.5\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n```\n\nReturn the complete corrected function, with any imports it needs, in a single ```python code block. No explanation."
+ },
+ "response": {
+  "text": "```python\ndef triangle_area(a, h):\n    return a * h / 2.0\n```",
+  "prompt_tokens": 126,
+  "completion_tokens": 15,
+  "ttft_ms": 1132.9,
+  "total_ms": 2066.7,
+  "tokens_estimated": true,
+  "queue_wait_ms": 0.0,
+  "finish_reason": "stop",
+  "reasoning_tokens": null
+ }
+}

@@ -1,0 +1,27 @@
+{
+ "key": "f711261abad8d06a8364500f35243607ba06c80a499fc163f2dfce30f527ef04",
+ "created_at": "2026-11-12T10:01:10.627+00:00",
+ "request": {
+  "backend": "groq-small",
+  "model_id": "openai/gpt-oss-20b",
+  "params": {
+   "max_tokens": 1024,
+   "temperature": 0.0,
+   "extra": {
+    "reasoning_effort": "low"
+   }
+  },
+  "prompt": "Reply with the single word: pong"
+ },
+ "response": {
+  "text": "pong",
+  "prompt_tokens": 78,
+  "completion_tokens": 18,
+  "ttft_ms": 750.04746999997,
+  "total_ms": 753.239533999988,
+  "tokens_estimated": false,
+  "queue_wait_ms": 0.0,
+  "finish_reason": "stop",
+  "reasoning_tokens": 8
+ }
+}

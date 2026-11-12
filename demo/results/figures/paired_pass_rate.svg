@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 182" width="640" height="182" role="img" aria-label="Change in pass rate against the baseline (paired, 95%)">
+<style>
+  .surface { fill: #fcfcfb; }
+  .ink { fill: #0b0b0b; } .ink2 { fill: #52514e; } .muted { fill: #898781; }
+  .grid { stroke: #e1e0d9; stroke-width: 1; } .axis { stroke: #c3c2b7; stroke-width: 1; }
+  .zero { stroke: #52514e; stroke-width: 1; stroke-dasharray: 3 3; }
+  .s1 { fill: #2a78d6; stroke: #2a78d6; } .s2 { fill: #eb6834; stroke: #eb6834; } .s3 { fill: #1baf7a; stroke: #1baf7a; }
+  .dot { fill: #0b0b0b; stroke: #fcfcfb; stroke-width: 2; } .whisker { stroke: #52514e; stroke-width: 2; }
+  .gap { stroke: #fcfcfb; stroke-width: 2; }
+  text { font-family: system-ui, -apple-system, "Segoe UI", sans-serif; font-size: 12px; }
+  .title { font-size: 13px; font-weight: 600; }
+  .tab { font-variant-numeric: tabular-nums; }
+  @media (prefers-color-scheme: dark) {
+    .surface { fill: #1a1a19; }
+    .ink { fill: #f0efec; } .ink2 { fill: #c3c2b7; }
+    .grid { stroke: #2c2c2a; } .axis { stroke: #383835; } .zero { stroke: #c3c2b7; }
+    .s1 { fill: #3987e5; stroke: #3987e5; } .s2 { fill: #d95926; stroke: #d95926; } .s3 { fill: #199e70; stroke: #199e70; }
+    .dot { fill: #f0efec; stroke: #1a1a19; } .whisker { stroke: #c3c2b7; } .gap { stroke: #1a1a19; }
+  }
+</style>
+<rect class="surface" width="640" height="182" rx="8"/><text class="ink title" x="16" y="24">Change in pass rate against the baseline (paired, 95%)</text><line class="grid" x1="129.53846153846155" x2="129.53846153846155" y1="38" y2="152"/><text class="muted tab" x="129.53846153846155" y="170" text-anchor="middle">-30 pts</text><line class="grid" x1="256.71794871794873" x2="256.71794871794873" y1="38" y2="152"/><text class="muted tab" x="256.71794871794873" y="170" text-anchor="middle">-20 pts</text><line class="grid" x1="383.89743589743597" x2="383.89743589743597" y1="38" y2="152"/><text class="muted tab" x="383.89743589743597" y="170" text-anchor="middle">-10 pts</text><line class="grid" x1="511.0769230769232" x2="511.0769230769232" y1="38" y2="152"/><text class="muted tab" x="511.0769230769232" y="170" text-anchor="middle">-0 pts</text><line class="zero" x1="511.0769230769232" x2="511.0769230769232" y1="34" y2="152"/><text class="ink" x="16" y="65.0">P1 vs P0</text><line class="whisker" x1="161.33333333333331" x2="479.28205128205144" y1="61.0" y2="61.0"/><circle class="dot" cx="320.3076923076923" cy="61.0" r="6"><title>P1 minus P0: −15.0 pts [−27.5 pts, −2.5 pts] - worse than baseline</title></circle><text class="ink" x="16" y="99.0">P2 vs P0</text><line class="whisker" x1="320.3076923076923" x2="574.6666666666667" y1="95.0" y2="95.0"/><circle class="dot" cx="447.4871794871796" cy="95.0" r="6"><title>P2 minus P0: −5.0 pts [−15.0 pts, +5.0 pts] - no detectable difference at n = 40</title></circle><text class="ink" x="16" y="133.0">P3 vs P0</text><line class="whisker" x1="256.71794871794884" x2="542.871794871795" y1="129.0" y2="129.0"/><circle class="dot" cx="415.69230769230785" cy="129.0" r="6"><title>P3 minus P0: −7.5 pts [−20.0 pts, +2.5 pts] - no detectable difference at n = 40</title></circle></svg>

@@ -1,0 +1,24 @@
+{
+ "key": "a5c34fb773caf5ed38953230197121ecdf0b4a5a1cdd3748fcfbbac6e2c471dd",
+ "created_at": "2026-11-12T10:28:24.634+00:00",
+ "request": {
+  "backend": "local-small",
+  "model_id": "qwen2.5-coder-7b-instruct-q4_k_m",
+  "params": {
+   "max_tokens": 1024,
+   "temperature": 0.0
+  },
+  "prompt": "Fix the bug in this Python function.\n\nCode:\n```python\ndef add(x: int, y: int):\n    return x + y + y + x\n```\n\nTest output:\n```\nTraceback (most recent call last):\n  File \"solution.py\", line 33, in <module>\n    check(add)\n    ~~~~~^^^^^\n  File \"solution.py\", line 23, in check\n    assert add(0, 1) == 1\n           ^^^^^^^^^^^^^^\nAssertionError\n```\n\nReturn the complete corrected function, with any imports it needs, in a single ```python code block. No explanation."
+ },
+ "response": {
+  "text": "```python\ndef add(x: int, y: int):\n    return x + y + y + x\n```",
+  "prompt_tokens": 115,
+  "completion_tokens": 15,
+  "ttft_ms": 2980.727277999904,
+  "total_ms": 8349.142462999907,
+  "tokens_estimated": true,
+  "queue_wait_ms": 0.0,
+  "finish_reason": "stop",
+  "reasoning_tokens": null
+ }
+}

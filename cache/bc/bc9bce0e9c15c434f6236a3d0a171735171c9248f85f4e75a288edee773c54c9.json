@@ -1,0 +1,27 @@
+{
+ "key": "bc9bce0e9c15c434f6236a3d0a171735171c9248f85f4e75a288edee773c54c9",
+ "created_at": "2026-11-12T10:03:13.739+00:00",
+ "request": {
+  "backend": "groq-large",
+  "model_id": "openai/gpt-oss-120b",
+  "params": {
+   "max_tokens": 1024,
+   "temperature": 0.0,
+   "extra": {
+    "reasoning_effort": "low"
+   }
+  },
+  "prompt": "A Python function fails its tests.\n\nCode:\n```python\ndef greatest_common_divisor(a: int, b: int) -> int:\n    while b:\n        a, b = b, a % b\n    return b\n```\n\nTest output:\n```\nTraceback (most recent call last):\n  File \"solution.py\", line 28, in <module>\n    check(greatest_common_divisor)\n    ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"solution.py\", line 23, in check\n    assert greatest_common_divisor(3, 7) == 1\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n```\n\nIn at most three sentences, state the root cause of the bug. Do not write code."
+ },
+ "response": {
+  "text": "The loop correctly computes the GCD in `a`, but the function returns `b` instead of `a`. After the loop finishes, `b` is always `0`, so the result is wrong for all inputs. The return statement should use `a`, not `b`.",
+  "prompt_tokens": 225,
+  "completion_tokens": 81,
+  "ttft_ms": 427.65322200000355,
+  "total_ms": 585.317936000024,
+  "tokens_estimated": false,
+  "queue_wait_ms": 0.0,
+  "finish_reason": "stop",
+  "reasoning_tokens": 15
+ }
+}

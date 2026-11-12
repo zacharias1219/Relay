@@ -1,0 +1,27 @@
+{
+ "key": "149d0dea8c85b013fa79488d8784f43d38a324c8bb7cebb9aad00a554b390808",
+ "created_at": "2026-11-12T10:03:38.245+00:00",
+ "request": {
+  "backend": "groq-large",
+  "model_id": "openai/gpt-oss-120b",
+  "params": {
+   "max_tokens": 3072,
+   "temperature": 0.0,
+   "extra": {
+    "reasoning_effort": "low"
+   }
+  },
+  "prompt": "Fix the bug in this Python function.\n\nCode:\n```python\ndef flip_case(string: str) -> str:\n    return string.lower()\n```\n\nTest output:\n```\nTraceback (most recent call last):\n  File \"solution.py\", line 25, in <module>\n    check(flip_case)\n    ~~~~~^^^^^^^^^^^\n  File \"solution.py\", line 22, in check\n    assert flip_case('Hello!') == 'hELLO!'\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n```\n\nDiagnosis: The function always calls `string.lower()`, which converts the entire input to lowercase instead of swapping each characterâs case. Consequently, it never produces uppercase letters for originally lowercase characters, causing the test expecting `'hELLO!'` to fail. The implementation should toggle the case of each character rather than simply lowercasing the whole string.\n\nReturn the complete corrected function, with any imports it needs, in a single ```python code block. No explanation."
+ },
+ "response": {
+  "text": "```python\ndef flip_case(string: str) -> str:\n    return string.swapcase()\n```",
+  "prompt_tokens": 277,
+  "completion_tokens": 41,
+  "ttft_ms": 433.31191700008276,
+  "total_ms": 1072.0505489999823,
+  "tokens_estimated": false,
+  "queue_wait_ms": 4432.9,
+  "finish_reason": "stop",
+  "reasoning_tokens": 12
+ }
+}

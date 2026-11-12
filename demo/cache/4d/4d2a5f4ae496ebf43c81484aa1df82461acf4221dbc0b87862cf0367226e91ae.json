@@ -1,0 +1,24 @@
+{
+ "key": "4d2a5f4ae496ebf43c81484aa1df82461acf4221dbc0b87862cf0367226e91ae",
+ "created_at": "2026-11-12T09:36:56.211+00:00",
+ "request": {
+  "backend": "local-small",
+  "model_id": "sim-local-7b",
+  "params": {
+   "max_tokens": 1024,
+   "temperature": 0.0
+  },
+  "prompt": "Fix the bug in this Python function.\n\nCode:\n```python\ndef add(x: int, y: int):\n    return x + y + y + x\n```\n\nTest output:\n```\nTraceback (most recent call last):\n  File \"solution.py\", line 33, in <module>\n    check(add)\n    ~~~~~^^^^^\n  File \"solution.py\", line 23, in check\n    assert add(0, 1) == 1\n           ^^^^^^^^^^^^^^\nAssertionError\n```\n\nReturn the complete corrected function, with any imports it needs, in a single ```python code block. No explanation."
+ },
+ "response": {
+  "text": "```python\ndef add(x: int, y: int):\n    return x + y + y + x\n```",
+  "prompt_tokens": 115,
+  "completion_tokens": 15,
+  "ttft_ms": 1047.8,
+  "total_ms": 1791.4,
+  "tokens_estimated": true,
+  "queue_wait_ms": 0.0,
+  "finish_reason": "stop",
+  "reasoning_tokens": null
+ }
+}

@@ -1,0 +1,130 @@
+# Relay experiment configuration.
+#
+# Model ids live here and nowhere else. Groq retires and renames models, so run
+#   python -m relay models
+# before every batch: it lists the ids your account can see and flags any
+# configured id that is missing.
+
+experiment:
+  name: relay-humanevalfix-python
+  seed: 20261112            # fixes the 40-task sample and every bootstrap
+  n_tasks: 40
+  max_model_calls_per_task: 4
+  temperature: 0.0          # primary runs; noise runs override with --temperature
+
+paths:
+  data_file: data/humanevalfix_python.jsonl
+  tasks_file: data/tasks.json
+  traces_dir: traces
+  cache_dir: cache
+  state_dir: state          # daily usage ledger for the rate limiter (git-ignored)
+  results_json: replay/results.json
+  tables_dir: results/tables
+  figures_dir: results/figures
+  annotations: analysis/annotations.yaml
+  repro_dir: build/repro
+
+dataset:
+  # HumanEvalFix (Python split of HumanEvalPack, MIT licence).
+  # Tried in order; the first source that answers wins. The sha256 of the
+  # downloaded file is recorded in data/SOURCE.json.
+  sources:
+    - https://huggingface.co/datasets/bigcode/humanevalpack/resolve/main/data/python/data/humanevalpack.jsonl
+    - https://raw.githubusercontent.com/bigcode-project/octopack/main/evaluation/create/humaneval-x/data/python/data/humanevalpack.jsonl
+
+backends:
+  local-small:
+    kind: llamacpp
+    role: cheapest first attempt
+    runs_on: your laptop via llama.cpp server
+    base_url: http://127.0.0.1:8080/v1
+    # Label only: llama.cpp serves whatever GGUF you loaded. Keep the
+    # quantization in the label so it lands in every trace and cache key.
+    model_id: qwen2.5-coder-7b-instruct-q4_k_m
+    quantization: Q4_K_M
+    # Qwen/Qwen2.5-Coder-7B-Instruct-GGUF (Apache-2.0), file sha256:
+    gguf_sha256: 509287f78cb4d4cf6b3843734733b914b2c158e43e22a7f4bf5e963800894d3c
+    price_per_mtok: { input: 0.0, output: 0.0 }
+    timeout_s: 300
+  # Groq's current free-tier models are the two GPT-OSS reasoning models.
+  # Reasoning tokens are billed as completion tokens AND count against
+  # max_tokens, so these backends get bigger budgets than the local model;
+  # a reply cut off mid-reasoning is traced with finish_reason "length".
+  # reasoning_effort: low keeps tokens (and the daily budget) down; it is
+  # part of the cache key, so changing it means fresh calls.
+  groq-small:
+    kind: groq
+    role: fast, cheap
+    runs_on: Groq
+    base_url: https://api.groq.com/openai/v1
+    model_id: openai/gpt-oss-20b
+    extra_params: { reasoning_effort: low }
+    max_tokens: { diagnose: 1024, patch: 3072, profile: 1024 }
+    # USD per million tokens, list price. Check https://groq.com/pricing
+    # before the first run and update; cost is reported as list-price
+    # equivalent because free-tier usage is free.
+    price_per_mtok: { input: 0.075, output: 0.30 }
+    limits: { rpm: 30, rpd: 1000, tpm: 8000, tpd: 200000 }
+    timeout_s: 180
+  groq-large:
+    kind: groq
+    role: strongest available
+    runs_on: Groq
+    base_url: https://api.groq.com/openai/v1
+    model_id: openai/gpt-oss-120b
+    extra_params: { reasoning_effort: low }
+    max_tokens: { diagnose: 1024, patch: 3072, profile: 1024 }
+    price_per_mtok: { input: 0.15, output: 0.60 }
+    limits: { rpm: 30, rpd: 1000, tpm: 8000, tpd: 200000 }
+    timeout_s: 180
+
+# The limits above are placeholders shaped like Groq's published free-tier
+# sample (30 RPM, 1,000 RPD, 8,000 TPM, 200,000 TPD for text models). Your
+# console limits page (console.groq.com/settings/limits) is the authority:
+# copy your numbers in. The limiter runs at `safety` x these values.
+ratelimit:
+  safety: 0.85
+  # What to reserve from the per-minute token bucket before each call.
+  # observed: prompt + learned overhead + the 90th-percentile completion size
+  #   seen for this model and max_tokens (x margin), capped at max_tokens;
+  #   full max_tokens until min_observations calls have been seen. Learned
+  #   sizes persist in state/usage-model.json across runs.
+  # max_tokens: the old, very conservative prompt + max_tokens.
+  reserve: { mode: observed, quantile: 0.9, margin: 1.25, min_observations: 3, window: 50 }
+  max_retries: 6            # on 429 / 5xx, after honouring retry-after
+  backoff_s: 2.0
+
+generation:
+  max_tokens:
+    diagnose: 200
+    patch: 1024
+  # Diagnose output is truncated to this many characters before it is
+  # passed to the patch stage, to keep prompts short.
+  diagnosis_max_chars: 800
+  test_output_max_chars: 1500
+
+sandbox:
+  mode: subprocess          # subprocess (Linux/WSL/macOS) or docker
+  timeout_s: 10
+  memory_mb: 1024
+  network: "off"            # subprocess: unshare -rn when available + socket guard
+  docker_image: python:3.12-slim
+
+analysis:
+  bootstrap_resamples: 10000
+  ci_level: 0.95
+  baseline_policy: P0
+  replay_default_policy: P3
+  # Overfit probe: compare each passing patch with the reference solution on
+  # perturbed versions of the test inputs. Disagreements become candidates
+  # for "passes the tests but is plainly wrong"; a human confirms them in
+  # analysis/annotations.yaml.
+  overfit_probe: true
+
+# Fill these in by hand before publishing. Auto-detected CPU/RAM/OS and the
+# llama.cpp build are recorded in each run's run_meta trace line.
+hardware:
+  # The first live runs used no laptop: "local" ran on the Claude Code cloud
+  # container's CPU (4 vCPU, no GPU). Replace these if you rerun P3 on a laptop.
+  laptop_model: "none: cloud container, 4 vCPU Intel Xeon @ 2.10GHz, 15.7 GB RAM, CPU only"
+  llama_cpp_build: "llama-cpp-python 0.3.36 (vendored llama.cpp), built with GGML_NATIVE=ON"

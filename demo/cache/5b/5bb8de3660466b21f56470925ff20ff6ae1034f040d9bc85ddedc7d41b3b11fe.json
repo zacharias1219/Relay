@@ -1,0 +1,27 @@
+{
+ "key": "5bb8de3660466b21f56470925ff20ff6ae1034f040d9bc85ddedc7d41b3b11fe",
+ "created_at": "2026-11-12T09:36:47.928+00:00",
+ "request": {
+  "backend": "groq-small",
+  "model_id": "sim-gpt-oss-20b",
+  "params": {
+   "max_tokens": 3072,
+   "temperature": 0.0,
+   "extra": {
+    "reasoning_effort": "low"
+   }
+  },
+  "prompt": "Fix the bug in this Python function.\n\nCode:\n```python\ndef add(x: int, y: int):\n    return x + y + y + x\n```\n\nTest output:\n```\nTraceback (most recent call last):\n  File \"solution.py\", line 33, in <module>\n    check(add)\n    ~~~~~^^^^^\n  File \"solution.py\", line 23, in check\n    assert add(0, 1) == 1\n           ^^^^^^^^^^^^^^\nAssertionError\n```\n\nDiagnosis: The bug in `add` seems to be excess logic, which produces incorrect output (sim-gpt-oss-20b).\n\nReturn the complete corrected function, with any imports it needs, in a single ```python code block. No explanation."
+ },
+ "response": {
+  "text": "```python\ndef add(x: int, y: int):\n    return x + y\n```",
+  "prompt_tokens": 142,
+  "completion_tokens": 239,
+  "ttft_ms": 160.7,
+  "total_ms": 478.7,
+  "tokens_estimated": true,
+  "queue_wait_ms": 0.0,
+  "finish_reason": "stop",
+  "reasoning_tokens": 226
+ }
+}

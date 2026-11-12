@@ -1,0 +1,24 @@
+{
+ "key": "0cc9727ecc05b9bdf0b87a52a01a361d4e6826b9153ddfdd8d782f3fd57a01df",
+ "created_at": "2026-11-12T10:31:25.328+00:00",
+ "request": {
+  "backend": "local-small",
+  "model_id": "qwen2.5-coder-7b-instruct-q4_k_m",
+  "params": {
+   "max_tokens": 1024,
+   "temperature": 0.0
+  },
+  "prompt": "Fix the bug in this Python function.\n\nCode:\n```python\ndef starts_one_ends(n):\n    if n == 1: return 1\n    return 18 * n * (10 ** (n - 2))\n```\n\nTest output:\n```\nTraceback (most recent call last):\n  File \"solution.py\", line 29, in <module>\n    check(starts_one_ends)\n    ~~~~~^^^^^^^^^^^^^^^^^\n  File \"solution.py\", line 21, in check\n    assert starts_one_ends(2) == 18\n           ^^^^^^^^^^^^^^^^^^^^^^^^\nAssertionError\n```\n\nReturn the complete corrected function, with any imports it needs, in a single ```python code block. No explanation."
+ },
+ "response": {
+  "text": "```python\ndef starts_one_ends(n):\n    if n == 1: return 1\n    return 18 * (n - 1) * (10 ** (n - 2))\n```",
+  "prompt_tokens": 135,
+  "completion_tokens": 25,
+  "ttft_ms": 3936.7658330002087,
+  "total_ms": 14845.538060000308,
+  "tokens_estimated": true,
+  "queue_wait_ms": 0.0,
+  "finish_reason": "stop",
+  "reasoning_tokens": null
+ }
+}
